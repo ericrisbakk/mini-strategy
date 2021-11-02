@@ -10,7 +10,7 @@ namespace Source.MiniStategy.Runtime {
     {
         #region ActionRules
 
-        public static void ApplyMove(GameStateDefinition state, GameActionsDefinition.Move move) {
+        public static void ApplyMove(GameState state, GameActionsDefinition.Move move) {
             var fromTile = GetTileData(state, move.From);
             var toTile = GetTileData(state, move.To);
 
@@ -22,11 +22,11 @@ namespace Source.MiniStategy.Runtime {
 
         #region Querying
 
-        public static Piece GetPieceAt(GameStateDefinition state, Vector2Int pos, Piece piece) {
+        public static Piece GetPieceAt(GameState state, Vector2Int pos, Piece piece) {
             return GetTileData(state, pos).Pieces[piece.ID];
         }
         
-        public static GameTileData GetTileData(GameStateDefinition state, Vector2Int pos) {
+        public static GameTileData GetTileData(GameState state, Vector2Int pos) {
             return (GameTileData) state.Map.GetFace(pos).Data;
         }
         
