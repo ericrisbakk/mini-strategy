@@ -12,11 +12,11 @@ namespace Source.MiniStategy.Runtime {
         /// Move a single piece from A to B
         /// </summary>
         public class Move : IAction {
-            public IPiece Target;
+            public Piece Target;
             public Vector2Int From;
             public Vector2Int To;
 
-            public Move(IPiece target, Vector2Int from, Vector2Int to) {
+            public Move(Piece target, Vector2Int from, Vector2Int to) {
                 Target = target;
                 From = from;
                 To = to;

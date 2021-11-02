@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Source.StrategyFramework.Runtime.Map;
 using Source.StrategyFramework.Runtime.Representation;
+using UnityEngine;
 
 namespace Source.MiniStategy.Runtime {
     
@@ -9,6 +10,10 @@ namespace Source.MiniStategy.Runtime {
     /// on its own.
     /// </summary>
     public class GameStateDefinition {
+        #region Variables
+
         public SquareGridMap Map;
+
+        #endregion
     }
 }
