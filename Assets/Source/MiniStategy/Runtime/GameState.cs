@@ -1,18 +1,19 @@
-using System.Collections;
 using System.Collections.Generic;
+using Source.StrategyFramework.Runtime.Map;
+using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 
-public class GameState : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+namespace Source.MiniStategy.Runtime {
+    
+    /// <summary>
+    /// The game state. The game state is merely a data object and has no game related behaviour
+    /// on its own.
+    /// </summary>
+    public class GameState {
+        #region Variables
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public SquareGridMap Map;
+
+        #endregion
     }
 }
