@@ -14,5 +14,9 @@ namespace Source.TicTacToe.Runtime {
         public Player PlayerX;
         public Board GameBoard;
         public GameResult Result;
+
+        public Square[,] GetBoard() {
+            return GameBoard.Squares;
+        }
     }
 }
