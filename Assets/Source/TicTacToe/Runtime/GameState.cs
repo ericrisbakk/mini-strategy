@@ -13,6 +13,8 @@ namespace Source.TicTacToe.Runtime {
         public Player Player0;
         public Player PlayerX;
         public Board GameBoard;
+        public bool Player0Turn;
+        public int MoveCounter = 0;
         public GameResult Result;
 
         public Square[,] GetBoard() {
