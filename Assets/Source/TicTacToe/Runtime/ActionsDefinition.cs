@@ -12,15 +12,18 @@ namespace Source.TicTacToe.Runtime {
         ///
         /// TODO: Implement as a functional approach (Railway oriented programming)
         /// TODO: Actions are also data objects. Convert into a class.
+        /// TODO: Asserts can be replaced with error messages.
         /// </summary>
         /// <param name="state"></param>
         /// <param name="player"></param>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public static GameState Draw(GameState state, Player player, Vector2Int pos) {
+        public static GameState Draw(GameState state, Vector2Int pos) {
             Assert.IsTrue(RulesDefinition.IsInBounds(pos));
             Assert.IsTrue(RulesDefinition.IsEmpty(state, pos));
-            state.GetBoard()[pos.x, pos.y].State = player.IsPlayer0 ? SquareState.Nought : SquareState.Cross;
+            state.GetBoard()[pos.x, pos.y].State = state.Player0Turn ? SquareState.Nought : SquareState.Cross;
+            state.MoveCounter += 1;
+            state.Player0Turn = !state.Player0Turn;
             return state;
         }
         

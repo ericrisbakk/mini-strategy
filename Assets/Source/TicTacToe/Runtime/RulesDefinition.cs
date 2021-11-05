@@ -1,11 +1,41 @@
+using System.Collections.Generic;
 using Source.TicTacToe.Runtime.Objects;
 using UnityEngine;
 
 namespace Source.TicTacToe.Runtime {
     public class RulesDefinition {
 
+        #region Information
+        /// <summary>
+        /// Return a list of all possible moves.
+        ///
+        /// TODO: Refactor when Actions become objects one can apply (Or should I use Func?)
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public static List<Vector2Int> GetActions(GameState state) {
+            var board = state.GetBoard();
+            var actions = new List<Vector2Int>();
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 2; j++) {
+                    if (board[i,j].State == SquareState.Empty)
+                        actions.Add(new Vector2Int(i, j));
+                }
+            }
+
+            return actions;
+        }
+
+        #endregion
+        
         #region GameOver
 
+        /// <summary>
+        /// Determine whether someone placed three in a row - uses the last made move to narrow down where to check.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="lastMovePosition"></param>
+        /// <returns></returns>
         public static GameResult IsGameOver(GameState state, Vector2Int lastMovePosition) {
             var board = state.GetBoard();
             var x = lastMovePosition.x;
@@ -29,6 +59,16 @@ namespace Source.TicTacToe.Runtime {
             return GameResult.Undecided;
         }
 
+        /// <summary>
+        /// Checking three in a row. (x,y) must be a position on the edge of the board, and
+        /// (deltaX, deltaY) is added to (x,y) to find the other squares of the line.
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="deltaX"></param>
+        /// <param name="deltaY"></param>
+        /// <returns></returns>
         private static bool ThreeInRow(Square[,] board, int x, int y, int deltaX, int deltaY) {
             SquareState mark1 = board[x, y].State;
             SquareState mark2 = board[x + deltaX, y + deltaY].State;
@@ -47,6 +87,11 @@ namespace Source.TicTacToe.Runtime {
         
         #region Validity
         
+        /// <summary>
+        /// Check that the position is inside the board.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
         public static bool IsInBounds(Vector2Int pos) {
             if (pos.x < 0 || pos.x > 2)
                 return false;
@@ -55,6 +100,12 @@ namespace Source.TicTacToe.Runtime {
             return true;
         }
 
+        /// <summary>
+        /// Check whether a position is empty.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
         public static bool IsEmpty(GameState state, Vector2Int pos) {
             return state.GetBoard()[pos.x, pos.y].State is SquareState.Empty;
         }
