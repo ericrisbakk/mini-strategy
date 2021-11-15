@@ -9,21 +9,29 @@ public class SquareBehaviour : MonoBehaviour {
     public GameObject nought;
     public GameObject cross;
     
-    [NonSerialized] public SquareState State;
-    // Start is called before the first frame update
+    [NonSerialized]
+    public Square Target;
 
-    private void Awake() {
-        State = SquareState.Empty;
-    }
+    public delegate void ClickedSquare(Square square);
+    
+     [NonSerialized]
+    public ClickedSquare OnClickedSquare;
 
-    public void SetState(SquareState newState) {
+    public void UpdateState() {
         nought.SetActive(false);
         cross.SetActive(false);
-        State = newState;
         
-        if (newState == SquareState.Cross)
-            cross.SetActive(true);
-        if (newState == SquareState.Nought)
-            nought.SetActive(true);
+        switch (Target.State) {
+            case SquareState.Cross:
+                cross.SetActive(true);
+                break;
+            case SquareState.Nought:
+                nought.SetActive(true);
+                break;
+        }
+    }
+
+    public void Click() {
+        OnClickedSquare?.Invoke(Target);
     }
 }
