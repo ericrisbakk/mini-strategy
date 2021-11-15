@@ -16,8 +16,8 @@ namespace Source.TicTacToe.Runtime {
         public static List<Vector2Int> GetActions(GameState state) {
             var board = state.GetBoard();
             var actions = new List<Vector2Int>();
-            for (int i = 0; i < 2; i++) {
-                for (int j = 0; j < 2; j++) {
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
                     if (board[i,j].State == SquareState.Empty)
                         actions.Add(new Vector2Int(i, j));
                 }
@@ -45,13 +45,13 @@ namespace Source.TicTacToe.Runtime {
                 return board[x, 0].State == SquareState.Cross ? GameResult.PlayerXWins : GameResult.Player0Wins;
 
             if (ThreeInRow(board, 0, y, 1, 0))
-                return board[x, 0].State == SquareState.Cross ? GameResult.PlayerXWins : GameResult.Player0Wins;
+                return board[0, y].State == SquareState.Cross ? GameResult.PlayerXWins : GameResult.Player0Wins;
 
             if (x == y && ThreeInRow(board, 0, 0, 1, 1))
-                return board[x, 0].State == SquareState.Cross ? GameResult.PlayerXWins : GameResult.Player0Wins;
+                return board[0, 0].State == SquareState.Cross ? GameResult.PlayerXWins : GameResult.Player0Wins;
 
             if (x + y == 2 && ThreeInRow(board, 0, 2, 1, -1))
-                return board[x, 0].State == SquareState.Cross ? GameResult.PlayerXWins : GameResult.Player0Wins;
+                return board[0, 2].State == SquareState.Cross ? GameResult.PlayerXWins : GameResult.Player0Wins;
 
             if (state.MoveCounter >= 9)
                 return GameResult.Draw;
