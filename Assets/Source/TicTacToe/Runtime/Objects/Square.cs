@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Source.TicTacToe.Runtime.Objects {
 
     public enum SquareState {
@@ -8,5 +10,11 @@ namespace Source.TicTacToe.Runtime.Objects {
     
     public class Square {
         public SquareState State;
+        public Vector2Int Position;
+
+        public Square(SquareState state, Vector2Int position) {
+            State = state;
+            Position = position;
+        }
     }
 }
