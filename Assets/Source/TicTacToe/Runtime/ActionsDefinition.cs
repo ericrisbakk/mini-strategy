@@ -13,6 +13,7 @@ namespace Source.TicTacToe.Runtime {
         /// TODO: Implement as a functional approach (Railway oriented programming)
         /// TODO: Actions are also data objects. Convert into a class.
         /// TODO: Asserts are not the correct way to do this. Error massages as in ROP
+        /// TODO: Actions should change the game result as well! Remember to call isGameOver()
         /// </summary>
         /// <param name="state"></param>
         /// <param name="player"></param>
