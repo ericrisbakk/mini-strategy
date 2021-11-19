@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Source.TicTacToe.Runtime {
+    
     public class ActionsDefinition {
 
         #region Actions
@@ -27,6 +28,7 @@ namespace Source.TicTacToe.Runtime {
             state.Player0Turn = !state.Player0Turn;
             return state;
         }
+        
         
         #endregion
     }
