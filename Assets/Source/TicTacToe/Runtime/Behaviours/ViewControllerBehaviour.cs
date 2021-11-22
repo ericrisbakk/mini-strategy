@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Source.TicTacToe.Runtime.Actions;
 using Source.TicTacToe.Runtime.Objects;
 using UnityEngine;
 
@@ -42,8 +43,9 @@ namespace Source.TicTacToe.Runtime.Behaviours {
         /// </summary>
         /// <param name="square"></param>
         private void SquareWasClicked(Square square) {
-            var player = State.GetCurrentPlayer;
             var pos = square.Position;
+            var player = State.GetCurrentPlayer;
+            var action = new Draw(pos, player);
             
             Debug.Log("Player " + (State.Player0Turn ? "0" : "X") + "'s turn, tried to draw at " + pos);
             
