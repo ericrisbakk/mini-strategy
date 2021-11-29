@@ -48,8 +48,8 @@ namespace Source.TicTacToe.Runtime.Behaviours {
             var action = new Draw(pos, player);
             
             Debug.Log("Player " + (State.Player0Turn ? "0" : "X") + "'s turn, tried to draw at " + pos);
-            
-            ActionsDefinition.Draw(State, pos);
+
+            RulesDefinition.Apply(State, action);
             
             squares[pos.x*3 + pos.y].UpdateState();
             
