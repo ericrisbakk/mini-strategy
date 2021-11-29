@@ -4,7 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "tic-tac-toe"
+        "tic-tac-toe",
+        "strategy.framework"
     ],
     "includePlatforms": [
         "Editor"

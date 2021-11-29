@@ -48,12 +48,12 @@ namespace Source.TicTacToe.Runtime.Behaviours {
             var action = new Draw(pos, player);
             
             Debug.Log("Player " + (State.Player0Turn ? "0" : "X") + "'s turn, tried to draw at " + pos);
-            
-            ActionsDefinition.Draw(State, pos);
+
+            Rules.Apply(State, action);
             
             squares[pos.x*3 + pos.y].UpdateState();
             
-            var result = RulesDefinition.IsGameOver(State, pos);
+            var result = Rules.IsGameOver(State, pos);
             if (result == GameResult.Undecided)
                 return;
 

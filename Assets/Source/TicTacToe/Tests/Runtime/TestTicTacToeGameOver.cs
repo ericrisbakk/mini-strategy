@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Source.TicTacToe.Runtime;
+using Source.TicTacToe.Runtime.Actions;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
 
@@ -24,13 +25,13 @@ namespace Source.TicTacToe.Tests.Runtime {
             var lastMove = positions[positions.Count - 1];
             
             foreach (var pos in positions) {
-                ActionsDefinition.Draw(state, pos);
+                Rules.Apply(state, new Draw(pos, state.GetCurrentPlayer));
                 if (state.MoveCounter < 9) {
-                    Assert.IsTrue(RulesDefinition.IsGameOver(state, pos) == GameResult.Undecided);
+                    Assert.IsTrue(Rules.IsGameOver(state, pos) == GameResult.Undecided);
                 }
             }
             
-            Assert.IsTrue(RulesDefinition.IsGameOver(state, lastMove) == GameResult.Draw);
+            Assert.IsTrue(Rules.IsGameOver(state, lastMove) == GameResult.Draw);
         }
     }
 }

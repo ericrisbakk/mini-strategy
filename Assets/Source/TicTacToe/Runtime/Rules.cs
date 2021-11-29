@@ -1,10 +1,21 @@
 using System.Collections.Generic;
+using Source.StrategyFramework.Runtime.Representation;
+using Source.TicTacToe.Runtime.Actions;
 using Source.TicTacToe.Runtime.Objects;
 using UnityEngine;
 
 namespace Source.TicTacToe.Runtime {
-    public class RulesDefinition {
+    public static class Rules {
 
+        #region Play
+
+        public static GameState Apply(GameState state, IAction action) {
+            var step = new DrawStep((Draw) action);
+            return step.Forward(state);
+        }
+
+        #endregion
+        
         #region Information
         /// <summary>
         /// Return a list of all possible moves.
