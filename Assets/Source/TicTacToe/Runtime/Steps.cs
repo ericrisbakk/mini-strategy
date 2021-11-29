@@ -39,7 +39,7 @@ namespace Source.TicTacToe.Runtime {
 
         public GameState ValidateForward(GameState state) {
             CommonValidation(state);
-            if (RulesDefinition.IsEmpty(state, Action.Position))
+            if (Rules.IsEmpty(state, Action.Position))
                 throw new Exception("[Validation][Step][Forward] The square was not empty.");
 
             return state;
@@ -56,14 +56,14 @@ namespace Source.TicTacToe.Runtime {
 
         public GameState ValidateBackward(GameState state) {
             CommonValidation(state);
-            if (!RulesDefinition.IsEmpty(state, Action.Position))
+            if (!Rules.IsEmpty(state, Action.Position))
                 throw new Exception("[Validation][Step][Backward] The square was empty.");
 
             return state;
         }
 
         private void CommonValidation(GameState state) {
-            if (RulesDefinition.IsInBounds(Action.Position))
+            if (Rules.IsInBounds(Action.Position))
                 throw new Exception("[Validation][Step] Given coordinates were out of bounds.");
         }
     }

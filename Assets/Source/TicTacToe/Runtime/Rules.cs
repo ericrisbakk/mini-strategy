@@ -5,7 +5,7 @@ using Source.TicTacToe.Runtime.Objects;
 using UnityEngine;
 
 namespace Source.TicTacToe.Runtime {
-    public static class RulesDefinition {
+    public static class Rules {
 
         #region Play
 
