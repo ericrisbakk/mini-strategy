@@ -20,10 +20,14 @@ namespace Source.TicTacToe.Runtime.Behaviours {
         
         public List<SquareBehaviour> squares;
 
+        private List<IStep> _history;
+        
         #endregion
 
         private void Awake() {
             State = new GameState();
+            _history = new List<IStep>();
+            
             // TODO: Rewrite s.t. this is not dependent on the implicit order of `squares`.
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -36,6 +40,22 @@ namespace Source.TicTacToe.Runtime.Behaviours {
                 }
             }
         }
+
+        public void Undo() {
+            if (_history.Count > 0) {
+                var lastStep = _history[_history.Count-1];
+                Rules.Undo(State, lastStep);
+                _history.RemoveAt(_history.Count-1);
+                var action = ((DrawStep) lastStep).Action;
+                var isPlayer0 = action.Player.IsPlayer0;
+                var pos = action.Position;
+                squares[pos.x*3 + pos.y].UpdateState();
+                Debug.Log("Undo move "+ (State.MoveCounter + 1) + "Player " + (isPlayer0 ? "0" : "X") 
+                                        + "'s turn, tried to draw at " + pos);
+            }
+            else
+                Debug.Log("Could not undo. Board is empty.");
+        }
         
         /// <summary>
         /// Handle event on when a square was clicked.
@@ -46,14 +66,16 @@ namespace Source.TicTacToe.Runtime.Behaviours {
             var pos = square.Position;
             var player = State.GetCurrentPlayer;
             var action = new Draw(pos, player);
-            
-            Debug.Log("Player " + (State.Player0Turn ? "0" : "X") + "'s turn, tried to draw at " + pos);
 
-            Rules.Apply(State, action);
+            Rules.Apply(State, action, out var step);
+            _history.Add(step);
+            
+            Debug.Log("Move " + State.MoveCounter + ": Player " + (State.Player0Turn ? "0" : "X") 
+                      + "'s turn, tried to draw at " + pos);
             
             squares[pos.x*3 + pos.y].UpdateState();
             
-            var result = Rules.IsGameOver(State, pos);
+            var result = Rules.CheckGameOver(State, pos).Result;
             if (result == GameResult.Undecided)
                 return;
 

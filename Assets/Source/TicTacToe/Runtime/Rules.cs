@@ -9,9 +9,22 @@ namespace Source.TicTacToe.Runtime {
 
         #region Play
 
-        public static GameState Apply(GameState state, IAction action) {
-            var step = new DrawStep((Draw) action);
+        public static GameState Apply(GameState state, IAction action, out IStep step) {
+            step = new DrawStep((Draw) action);
+            step.ValidateForward(state);
             return step.Forward(state);
+        }
+
+        // TODO: The changing of the game result should be a step on its own, such that it can be reverted properly.
+        public static GameState Undo(GameState state, IStep step) {
+            step.ValidateBackward(state);
+            step.Backward(state);
+            return state;
+        }
+
+        public static GameState CheckGameOver(GameState state, Vector2Int lastPlay) {
+            state.Result = IsGameOver(state, lastPlay);
+            return state;
         }
 
         #endregion
