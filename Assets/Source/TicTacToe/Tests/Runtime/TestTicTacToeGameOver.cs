@@ -25,7 +25,7 @@ namespace Source.TicTacToe.Tests.Runtime {
             var lastMove = positions[positions.Count - 1];
             
             foreach (var pos in positions) {
-                Rules.Apply(state, new Draw(pos, state.GetCurrentPlayer));
+                Rules.Apply(state, new Draw(pos, state.GetCurrentPlayer), out var step);
                 if (state.MoveCounter < 9) {
                     Assert.IsTrue(Rules.IsGameOver(state, pos) == GameResult.Undecided);
                 }

@@ -1,6 +1,7 @@
 using System;
 using Source.TicTacToe.Runtime.Actions;
 using Source.TicTacToe.Runtime.Objects;
+using UnityEditor.Scripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -39,7 +40,9 @@ namespace Source.TicTacToe.Runtime {
 
         public GameState ValidateForward(GameState state) {
             CommonValidation(state);
-            if (Rules.IsEmpty(state, Action.Position))
+            if (state.Result != GameResult.Undecided)
+                throw new Exception("[Validation][Step][Forward] The game is already over");
+            if (!Rules.IsEmpty(state, Action.Position))
                 throw new Exception("[Validation][Step][Forward] The square was not empty.");
 
             return state;
@@ -51,19 +54,22 @@ namespace Source.TicTacToe.Runtime {
             state.GetBoard()[pos.x, pos.y].State = SquareState.Empty;
             state.MoveCounter -= 1;
             state.Player0Turn = !state.Player0Turn;
+            state.Result = GameResult.Undecided;
             return state;
         }
 
         public GameState ValidateBackward(GameState state) {
             CommonValidation(state);
-            if (!Rules.IsEmpty(state, Action.Position))
+            if (state.MoveCounter <= 0)
+                throw new Exception("[Validation][Step][Backward] No moves have been made.");
+            if (Rules.IsEmpty(state, Action.Position))
                 throw new Exception("[Validation][Step][Backward] The square was empty.");
 
             return state;
         }
 
         private void CommonValidation(GameState state) {
-            if (Rules.IsInBounds(Action.Position))
+            if (!Rules.IsInBounds(Action.Position))
                 throw new Exception("[Validation][Step] Given coordinates were out of bounds.");
         }
     }
