@@ -1,0 +1,16 @@
+{
+    "name": "Chess.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8ca21f54da210be40ac5671556158ae2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
