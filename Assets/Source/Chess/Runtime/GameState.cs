@@ -1,7 +1,8 @@
 using Source.Chess.Runtime.Objects;
+using Source.StrategyFramework.Runtime.Representation;
 
 namespace Source.Chess.Runtime {
-    public class GameState {
+    public class GameState : IState {
         public Player White { get; }
         public Player Black { get; }
         public Board Board { get; }

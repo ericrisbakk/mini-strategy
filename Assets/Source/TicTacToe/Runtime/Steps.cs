@@ -1,27 +1,11 @@
 using System;
+using Source.StrategyFramework.Runtime.Representation;
 using Source.TicTacToe.Runtime.Actions;
 using Source.TicTacToe.Runtime.Objects;
-using UnityEditor.Scripting;
-using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace Source.TicTacToe.Runtime {
-    
-    /// <summary>
-    /// A single IStep object corresponds to a single event within the game, containing the necessary info
-    /// to both modify the state to bring it forwards or backwards in time.
-    ///
-    /// A forward step can create other steps
-    /// </summary>
-    public interface IStep {
-        public GameState Forward(GameState state);
-        public GameState ValidateForward(GameState state);
-        public GameState Backward(GameState state);
-        public GameState ValidateBackward(GameState state);
 
-    }
-
-    public class DrawStep : IStep {
+    public class DrawStep : IStep<GameState> {
 
         public Draw Action { get; }
         
