@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Source.StrategyFramework.Runtime.Representation;
 using Source.TicTacToe.Runtime.Actions;
 using Source.TicTacToe.Runtime.Objects;
 using UnityEngine;
@@ -20,13 +21,13 @@ namespace Source.TicTacToe.Runtime.Behaviours {
         
         public List<SquareBehaviour> squares;
 
-        private List<IStep> _history;
+        private List<IStep<GameState>> _history;
         
         #endregion
 
         private void Awake() {
             State = new GameState();
-            _history = new List<IStep>();
+            _history = new List<IStep<GameState>>();
             
             // TODO: Rewrite s.t. this is not dependent on the implicit order of `squares`.
             for (int i = 0; i < 3; i++) {

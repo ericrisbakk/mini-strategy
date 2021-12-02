@@ -1,3 +1,4 @@
+using Source.StrategyFramework.Runtime.Representation;
 using Source.TicTacToe.Runtime.Objects;
 
 namespace Source.TicTacToe.Runtime {
@@ -9,7 +10,7 @@ namespace Source.TicTacToe.Runtime {
         PlayerXWins,
     }
     
-    public class GameState {
+    public class GameState : IState {
         public Player Player0;
         public Player PlayerX;
         public Board GameBoard;
