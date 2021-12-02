@@ -4,6 +4,7 @@ namespace Source.Chess.Runtime {
     
     public enum PieceType {
         Empty,
+        OutOfBounds,
         WPawn,
         WKnight,
         WBishop,
