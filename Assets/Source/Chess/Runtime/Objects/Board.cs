@@ -4,10 +4,10 @@ namespace Source.Chess.Runtime.Objects {
     /// Pieces are represented using integer values.
     /// </summary>
     public class Board {
-        public int[,] Squares { get; }
+        public PieceType[,] Squares { get; }
 
         public Board() {
-            Squares = new int[8, 8];
+            Squares = new PieceType[8, 8];
         }
     }
 }

@@ -10,9 +10,9 @@ namespace Source.Chess.Runtime.Actions {
         public Player Player;
         public Vector2Int Source { get; }
         public Vector2Int Target { get; }
-        public int Piece;
+        public PieceType Piece;
 
-        public Move(Player player, int piece, Vector2Int source, Vector2Int target) {
+        public Move(Player player, PieceType piece, Vector2Int source, Vector2Int target) {
             Player = player;
             Piece = piece;
             Source = source;
