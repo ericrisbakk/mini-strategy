@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
 using UnityEngine.Assertions;
 
@@ -50,6 +52,19 @@ namespace Source.Chess.Runtime {
                 return true;
             return false;
         }
+
+        public static bool MoveCaptures(Move move) => (int) move.Capture >= 2;
+        #endregion
+
+        #region Utility
+
+        public static Player GetOtherPlayer(GameState state, Player player) {
+            if (player == state.White) return state.Black;
+            if (player == state.Black) return state.White;
+
+            throw new Exception("Player object of state does not match the given player.");
+        }
+
 
         #endregion
     }

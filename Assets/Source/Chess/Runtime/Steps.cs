@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Source.Chess.Runtime.Actions;
+using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
 
@@ -43,6 +45,8 @@ namespace Source.Chess.Runtime {
                     "The piece on source position must match the piece value of the move.");
                 Assert.IsTrue(state.Squares()[t.x, t.y] == move.Capture,
                     "The piece on target position must match the capture value of the move.");
+                if (Rules.MoveCaptures(move))
+                    Assert.IsTrue(Rules.OwnsPiece(Rules.GetOtherPlayer(state, move.Player), move.Capture));
                 return state;
             }
         }
