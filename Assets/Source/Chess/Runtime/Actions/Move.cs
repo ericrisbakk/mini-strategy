@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Source.Chess.Runtime.Actions {
     /// <summary>
-    /// Movement of a chess piece, which may cause a capture (though this is not included as a field)
+    /// Movement of a chess piece, which may cause a capture (No capture is given the "Empty" value).
     /// En-passant is included within the move rule.
     /// </summary>
     public class Move {
@@ -11,6 +11,7 @@ namespace Source.Chess.Runtime.Actions {
         public Vector2Int Source { get; }
         public Vector2Int Target { get; }
         public PieceType Piece;
+        public PieceType Capture;
 
         public Move(Player player, PieceType piece, Vector2Int source, Vector2Int target) {
             Player = player;
