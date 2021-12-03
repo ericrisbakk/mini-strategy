@@ -1,13 +1,16 @@
 using System.Collections.Generic;
+using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Objects {
     public class Player {
-        public bool IsWhite { get; }
-        public Dictionary<int, int> Captures { get; }
+        public PlayerType Color { get; }
+        public Dictionary<PieceType, int> Captures { get; }
 
-        public Player(bool isWhite) {
-            IsWhite = isWhite;
-            Captures = new Dictionary<int, int>();
+        public Player(PlayerType color) {
+            Assert.AreNotEqual(color, PlayerType.Unassigned, 
+                "Player must be assigned a color.");
+            Color = color;
+            Captures = new Dictionary<PieceType, int>();
         }
     }
 }

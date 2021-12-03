@@ -8,9 +8,11 @@ namespace Source.Chess.Runtime {
         public Board Board { get; }
 
         public GameState() {
-            White = new Player(true);
-            Black = new Player(false);
+            White = new Player(PlayerType.White);
+            Black = new Player(PlayerType.Black);
             Board = new Board();
         }
+
+        public PieceType[,] Squares() => Board.Squares;
     }
 }
