@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Source.Chess.Runtime.Actions;
-using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
 
