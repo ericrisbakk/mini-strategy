@@ -69,12 +69,12 @@ namespace Source.Chess.Runtime {
             }
         }
         
-        // TODO: En passant must become its own step, because its behaviour is different from other captures.
         public class PawnMoveStep : MoveStep {
             public PawnMoveStep(Move move) : base(move) {}
 
-            public override GameState ValidateForward(GameState state) {
-                base.ValidateForward(state);
+            // TODO: There actually needs to be a check for the En Passant case, but that requires outside information.
+            // TODO: Consider a "Promise" test, that must happen immediately after.
+            private GameState CommonPawnValidation(GameState state) {
                 var s = move.Source;
                 var t = move.Target;
                 var start = move.Player.Color == PlayerType.White ? 7 : 2;
@@ -94,12 +94,19 @@ namespace Source.Chess.Runtime {
                                   && state.Squares()[s.x + direction, s.y] == PieceType.Empty,
                         "Pawn can only move forward two spaces when at starting position and unblocked.");
 
-
+                return state;
+            }
+            
+            public override GameState ValidateForward(GameState state) {
+                base.ValidateForward(state);
+                CommonPawnValidation(state);
                 return state;
             }
 
             public override GameState ValidateBackward(GameState state) {
-                throw new NotImplementedException();
+                base.ValidateBackward(state);
+                CommonPawnValidation(state);
+                return state;
             }
         }
     }
