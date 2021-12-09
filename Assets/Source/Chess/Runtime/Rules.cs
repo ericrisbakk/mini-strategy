@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
+using UnityEngine;
 
 namespace Source.Chess.Runtime {
     /// <summary>
@@ -33,6 +35,18 @@ namespace Source.Chess.Runtime {
 
     // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
     public class Rules {
+        #region Moves
+
+        List<Vector2Int> PawnMoves(GameState state, Vector2Int piece) {
+            var player = PlayerOfPiece(state.Squares()[piece.x, piece.y]);
+            var start = GetPawnStartRow(player);
+            var direction = GetPawnDirection(player);
+
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        
         #region Checks
 
         /// <summary>
@@ -51,6 +65,15 @@ namespace Source.Chess.Runtime {
             return false;
         }
 
+        public static PlayerType PlayerOfPiece(PieceType piece) {
+            var pieceVal = (int) piece;
+            if (2 <= pieceVal && pieceVal <= 7)
+                return PlayerType.White;
+            if ( pieceVal > 7)
+                return PlayerType.Black;
+            return PlayerType.Unassigned;
+        }
+
         public static bool MoveCaptures(Move move) => (int) move.Capture >= 2;
         #endregion
 
@@ -63,6 +86,27 @@ namespace Source.Chess.Runtime {
             throw new Exception("Player object of state does not match the given player.");
         }
 
+        public static int GetPawnStartRow(PlayerType player) {
+            switch (player) {
+                case PlayerType.White:
+                    return 8;
+                case PlayerType.Black:
+                    return 3;
+                default:
+                    throw new Exception("Handed unassigned player while trying to determine pawn direction.");
+            }
+        }
+
+        public static int GetPawnDirection(PlayerType player) {
+            switch (player) {
+                case PlayerType.White:
+                    return -1;
+                case PlayerType.Black:
+                    return 1;
+                default:
+                    throw new Exception("Handed unassigned player while trying to determine pawn direction.");
+            }
+        }
 
         #endregion
     }

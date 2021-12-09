@@ -29,7 +29,7 @@ namespace Source.Chess.Runtime {
                 return state;
             }
 
-            private GameState CommonValidation(GameState state) {
+            public virtual GameState CommonValidation(GameState state) {
                 Assert.AreNotEqual(move.Player.Color, PlayerType.Unassigned, 
                     "Player must have a color.");
                 Assert.IsTrue(Rules.OwnsPiece(move.Player, move.Piece),
@@ -74,11 +74,11 @@ namespace Source.Chess.Runtime {
 
             // TODO: There actually needs to be a check for the En Passant case, but that requires outside information.
             // TODO: Consider a "Promise" test, that must happen immediately after.
-            private GameState CommonPawnValidation(GameState state) {
+            public override GameState CommonValidation(GameState state) {
                 var s = move.Source;
                 var t = move.Target;
-                var start = move.Player.Color == PlayerType.White ? 7 : 2;
-                var direction = move.Player.Color == PlayerType.White ? -1 : 1;
+                var start = Rules.GetPawnStartRow(move.Player.Color);
+                var direction = Rules.GetPawnDirection(move.Player.Color);
 
                 Assert.IsTrue(direction == Math.Sign(t.x - s.x),
                     "Pawn can only move towards opposite side.");
@@ -96,16 +96,17 @@ namespace Source.Chess.Runtime {
 
                 return state;
             }
-            
-            public override GameState ValidateForward(GameState state) {
-                base.ValidateForward(state);
-                CommonPawnValidation(state);
-                return state;
-            }
+        }
 
-            public override GameState ValidateBackward(GameState state) {
-                base.ValidateBackward(state);
-                CommonPawnValidation(state);
+        public class KnightMoveStep : MoveStep {
+            public KnightMoveStep(Move move) : base(move) { }
+
+            public override GameState CommonValidation(GameState state) {
+                var s = move.Source;
+                var t = move.Target;
+                Assert.IsTrue((Math.Abs(t.x - s.x) == 2 && Math.Abs(t.y - s.y) == 1)
+                    || (Math.Abs(t.x - s.x) == 1 && Math.Abs(t.y - s.y) == 2),
+                    "Knight move must be 2-then-1.");
                 return state;
             }
         }
