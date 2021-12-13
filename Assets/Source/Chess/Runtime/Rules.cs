@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Source.Chess.Runtime {
     /// <summary>
@@ -34,36 +35,41 @@ namespace Source.Chess.Runtime {
     }
 
     // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
-    public class Rules {
+    public static class Rules {
         #region Moves
 
-        List<Steps.PawnMoveStep> PawnMoves(GameState state, Vector2Int source) {
+        public static List<Steps.PawnMoveStep> GetPawnMoves(GameState state, Vector2Int source) {
             var piece = state.Square(source);
-            var color = PlayerOfPiece(piece);
+            var player = state.CurrentPlayer;
+            var color = ColorOfPiece(piece);
             var start = GetPawnStartRow(color);
             var direction = GetPawnDirection(color);
             var moveList = new List<Steps.PawnMoveStep>();
 
             var posAhead1 = new Vector2Int(source.x + direction, source.y);
             if (state.Square(posAhead1) == PieceType.Empty) {
-                Add(moveList, new Move(state.CurrentPlayer, PieceType.WPawn, source, posAhead1));
+                Add(moveList, new Move(player, PieceType.WPawn, source, posAhead1));
 
                 var posAhead2 = new Vector2Int(source.x + (2 * direction), source.y);
                 if (source.x == start
                     && state.Square(posAhead2) == PieceType.Empty) {
-                    Add(moveList, new Move(state.CurrentPlayer, PieceType.WPawn, source, posAhead2));
+                    Add(moveList, new Move(player, PieceType.WPawn, source, posAhead2));
                 }
             }
 
             var leftCapture = new Vector2Int(source.x + direction, source.y + 1);
+            if (OwnsPiece(GetOtherPlayer(state, player), state.Square(leftCapture)))
+                Add(moveList, new Move(player, PieceType.WPawn, source, leftCapture));
+            
             var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
+            if (OwnsPiece(GetOtherPlayer(state, player), state.Square(rightCapture)))
+                Add(moveList, new Move(player, PieceType.WPawn, source, rightCapture));
 
-            // TODO left and right captures.
 
-            throw new NotImplementedException();
+            return moveList;
         }
 
-        private void Add(List<Steps.PawnMoveStep> stepList, Move move) {
+        private static void Add(List<Steps.PawnMoveStep> stepList, Move move) {
             stepList.Add(new Steps.PawnMoveStep(move));
         }
 
@@ -87,7 +93,7 @@ namespace Source.Chess.Runtime {
             return false;
         }
 
-        public static Color PlayerOfPiece(PieceType piece) {
+        public static Color ColorOfPiece(PieceType piece) {
             var pieceVal = (int) piece;
             if (2 <= pieceVal && pieceVal <= 7)
                 return Color.White;
@@ -95,7 +101,12 @@ namespace Source.Chess.Runtime {
                 return Color.Black;
             return Color.Unassigned;
         }
-
+        
+        /// <summary>
+        /// Check whether the PieceType of the move capture is of a piece or not by checking the int value.
+        /// </summary>
+        /// <param name="move"></param>
+        /// <returns></returns>
         public static bool MoveCaptures(Move move) => (int) move.Capture >= 2;
         
         public static Player GetOtherPlayer(GameState state, Player player) {
