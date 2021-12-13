@@ -37,12 +37,34 @@ namespace Source.Chess.Runtime {
     public class Rules {
         #region Moves
 
-        List<Vector2Int> PawnMoves(GameState state, Vector2Int piece) {
-            var player = PlayerOfPiece(state.Squares()[piece.x, piece.y]);
-            var start = GetPawnStartRow(player);
-            var direction = GetPawnDirection(player);
+        List<Steps.PawnMoveStep> PawnMoves(GameState state, Vector2Int source) {
+            var piece = state.Square(source);
+            var color = PlayerOfPiece(piece);
+            var start = GetPawnStartRow(color);
+            var direction = GetPawnDirection(color);
+            var moveList = new List<Steps.PawnMoveStep>();
+
+            var posAhead1 = new Vector2Int(source.x + direction, source.y);
+            if (state.Square(posAhead1) == PieceType.Empty) {
+                Add(moveList, new Move(state.CurrentPlayer, PieceType.WPawn, source, posAhead1));
+
+                var posAhead2 = new Vector2Int(source.x + (2 * direction), source.y);
+                if (source.x == start
+                    && state.Square(posAhead2) == PieceType.Empty) {
+                    Add(moveList, new Move(state.CurrentPlayer, PieceType.WPawn, source, posAhead2));
+                }
+            }
+
+            var leftCapture = new Vector2Int(source.x + direction, source.y + 1);
+            var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
+
+            // TODO left and right captures.
 
             throw new NotImplementedException();
+        }
+
+        private void Add(List<Steps.PawnMoveStep> stepList, Move move) {
+            stepList.Add(new Steps.PawnMoveStep(move));
         }
 
         #endregion
@@ -75,10 +97,7 @@ namespace Source.Chess.Runtime {
         }
 
         public static bool MoveCaptures(Move move) => (int) move.Capture >= 2;
-        #endregion
-
-        #region Utility
-
+        
         public static Player GetOtherPlayer(GameState state, Player player) {
             if (player == state.White) return state.Black;
             if (player == state.Black) return state.White;
