@@ -11,8 +11,8 @@ namespace Source.Chess.Runtime {
         public Player CurrentPlayer { get; set; }
 
         public GameState() {
-            White = new Player(PlayerType.White);
-            Black = new Player(PlayerType.Black);
+            White = new Player(Color.White);
+            Black = new Player(Color.Black);
             Board = new Board();
         }
 

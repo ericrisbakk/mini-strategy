@@ -30,7 +30,7 @@ namespace Source.Chess.Runtime {
             }
 
             public virtual GameState CommonValidation(GameState state) {
-                Assert.AreNotEqual(move.Player.Color, PlayerType.Unassigned, 
+                Assert.AreNotEqual(move.Player.Color, Color.Unassigned, 
                     "Player must have a color.");
                 Assert.IsTrue(Rules.OwnsPiece(move.Player, move.Piece),
                     "Player and piece color do not match.");

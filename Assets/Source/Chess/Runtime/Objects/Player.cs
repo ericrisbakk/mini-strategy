@@ -3,11 +3,11 @@ using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Objects {
     public class Player {
-        public PlayerType Color { get; }
+        public Color Color { get; }
         public Dictionary<PieceType, int> Captures { get; }
 
-        public Player(PlayerType color) {
-            Assert.AreNotEqual(color, PlayerType.Unassigned, 
+        public Player(Color color) {
+            Assert.AreNotEqual(color, Color.Unassigned, 
                 "Player must be assigned a color.");
             Color = color;
             Captures = new Dictionary<PieceType, int>();

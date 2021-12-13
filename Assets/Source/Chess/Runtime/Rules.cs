@@ -27,8 +27,8 @@ namespace Source.Chess.Runtime {
         BKing = 13
     }
 
-    public enum PlayerType {
-        Unassigned,
+    public enum Color {
+        Unassigned = 0,
         White,
         Black,
     }
@@ -80,20 +80,20 @@ namespace Source.Chess.Runtime {
         /// including if the `player.Color` is unassigned.</returns>
         public static bool OwnsPiece(Player player, PieceType piece) {
             var pieceVal = (int) piece;
-            if (player.Color == PlayerType.White && 2 <= pieceVal && pieceVal <= 7)
+            if (player.Color == Color.White && 2 <= pieceVal && pieceVal <= 7)
                 return true;
-            if (player.Color == PlayerType.Black && pieceVal > 7)
+            if (player.Color == Color.Black && pieceVal > 7)
                 return true;
             return false;
         }
 
-        public static PlayerType PlayerOfPiece(PieceType piece) {
+        public static Color PlayerOfPiece(PieceType piece) {
             var pieceVal = (int) piece;
             if (2 <= pieceVal && pieceVal <= 7)
-                return PlayerType.White;
+                return Color.White;
             if ( pieceVal > 7)
-                return PlayerType.Black;
-            return PlayerType.Unassigned;
+                return Color.Black;
+            return Color.Unassigned;
         }
 
         public static bool MoveCaptures(Move move) => (int) move.Capture >= 2;
@@ -105,22 +105,22 @@ namespace Source.Chess.Runtime {
             throw new Exception("Player object of state does not match the given player.");
         }
 
-        public static int GetPawnStartRow(PlayerType player) {
+        public static int GetPawnStartRow(Color player) {
             switch (player) {
-                case PlayerType.White:
+                case Color.White:
                     return 8;
-                case PlayerType.Black:
+                case Color.Black:
                     return 3;
                 default:
                     throw new Exception("Handed unassigned player while trying to determine pawn direction.");
             }
         }
 
-        public static int GetPawnDirection(PlayerType player) {
+        public static int GetPawnDirection(Color player) {
             switch (player) {
-                case PlayerType.White:
+                case Color.White:
                     return -1;
-                case PlayerType.Black:
+                case Color.Black:
                     return 1;
                 default:
                     throw new Exception("Handed unassigned player while trying to determine pawn direction.");
