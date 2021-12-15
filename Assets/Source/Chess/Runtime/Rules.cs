@@ -38,41 +38,39 @@ namespace Source.Chess.Runtime {
     public static class Rules {
         #region Moves
 
-        public static List<Steps.PawnMoveStep> GetPawnMoves(GameState state, Vector2Int source) {
+        public static List<Move> GetPawnMoves(GameState state, Vector2Int source) {
             var piece = state.Square(source);
             var player = state.CurrentPlayer;
             var color = ColorOfPiece(piece);
             var start = GetPawnStartRow(color);
             var direction = GetPawnDirection(color);
-            var moveList = new List<Steps.PawnMoveStep>();
+            var moveList = new List<Move>();
 
             var posAhead1 = new Vector2Int(source.x + direction, source.y);
             if (state.Square(posAhead1) == PieceType.Empty) {
-                Add(moveList, new Move(player, PieceType.WPawn, source, posAhead1));
+                moveList.Add(new Move(player, PieceType.WPawn, source, posAhead1));
 
                 var posAhead2 = new Vector2Int(source.x + (2 * direction), source.y);
                 if (source.x == start
                     && state.Square(posAhead2) == PieceType.Empty) {
-                    Add(moveList, new Move(player, PieceType.WPawn, source, posAhead2));
+                    moveList.Add(new Move(player, PieceType.WPawn, source, posAhead2));
                 }
             }
 
             var leftCapture = new Vector2Int(source.x + direction, source.y + 1);
             if (OwnsPiece(GetOtherPlayer(state, player), state.Square(leftCapture)))
-                Add(moveList, new Move(player, PieceType.WPawn, source, leftCapture));
+                moveList.Add(new Move(player, PieceType.WPawn, source, leftCapture));
             
             var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
             if (OwnsPiece(GetOtherPlayer(state, player), state.Square(rightCapture)))
-                Add(moveList, new Move(player, PieceType.WPawn, source, rightCapture));
+                moveList.Add(new Move(player, PieceType.WPawn, source, rightCapture));
 
 
             return moveList;
         }
-
-        private static void Add(List<Steps.PawnMoveStep> stepList, Move move) {
-            stepList.Add(new Steps.PawnMoveStep(move));
-        }
-
+        
+        
+        
         #endregion
         
         #region Checks

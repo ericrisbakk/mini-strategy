@@ -10,8 +10,8 @@ namespace Source.StrategyFramework.Runtime.Representation {
     /// </summary>
     public interface IStep<T> {
         public T Forward(T state);
-        public T ValidateForward(T state);
         public T Backward(T state);
+        public T ValidateForward(T state);
         public T ValidateBackward(T state);
     }
 }
