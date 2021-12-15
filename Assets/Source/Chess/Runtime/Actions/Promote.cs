@@ -1,8 +1,9 @@
 using Source.Chess.Runtime.Objects;
+using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 
 namespace Source.Chess.Runtime.Actions {
-    public class Promote {
+    public class Promote :IAction {
         public Player Player { get; }
         public Vector2Int Pawn { get; }
         public PieceType Promotion { get; }
