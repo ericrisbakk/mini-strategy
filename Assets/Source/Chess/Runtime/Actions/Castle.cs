@@ -1,8 +1,9 @@
 using Source.Chess.Runtime.Objects;
+using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 
 namespace Source.Chess.Runtime.Actions {
-    public class Castle {
+    public class Castle : IAction {
         public Player Player { get; }
         public Vector2Int King { get; }
         public Vector2Int Rook { get; }

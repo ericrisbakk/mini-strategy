@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
-using UnityEngine.Assertions;
+using Source.StrategyFramework.Runtime.Representation;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Source.Chess.Runtime {
     /// <summary>
@@ -27,14 +29,58 @@ namespace Source.Chess.Runtime {
         BKing = 13
     }
 
-    public enum PlayerType {
-        Unassigned,
+    public enum Color {
+        Unassigned = 0,
         White,
         Black,
     }
 
     // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
-    public class Rules {
+    public static class Rules {
+
+        public static List<IStep<GameState>> Apply(GameState state, IAction action) {
+            var stepList = new List<IStep<GameState>>();
+            
+            throw new NotImplementedException();
+        }
+        
+        #region Moves
+
+        public static List<Move> GetPawnMoves(GameState state, Vector2Int source) {
+            var piece = state.Square(source);
+            var player = state.CurrentPlayer;
+            var color = ColorOfPiece(piece);
+            var start = GetPawnStartRow(color);
+            var direction = GetPawnDirection(color);
+            var moveList = new List<Move>();
+
+            var posAhead1 = new Vector2Int(source.x + direction, source.y);
+            if (state.Square(posAhead1) == PieceType.Empty) {
+                moveList.Add(new Move(player, PieceType.WPawn, source, posAhead1));
+
+                var posAhead2 = new Vector2Int(source.x + (2 * direction), source.y);
+                if (source.x == start
+                    && state.Square(posAhead2) == PieceType.Empty) {
+                    moveList.Add(new Move(player, PieceType.WPawn, source, posAhead2));
+                }
+            }
+
+            var leftCapture = new Vector2Int(source.x + direction, source.y + 1);
+            if (OwnsPiece(GetOtherPlayer(state, player), state.Square(leftCapture)))
+                moveList.Add(new Move(player, PieceType.WPawn, source, leftCapture));
+            
+            var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
+            if (OwnsPiece(GetOtherPlayer(state, player), state.Square(rightCapture)))
+                moveList.Add(new Move(player, PieceType.WPawn, source, rightCapture));
+
+
+            return moveList;
+        }
+        
+        
+        
+        #endregion
+        
         #region Checks
 
         /// <summary>
@@ -46,18 +92,29 @@ namespace Source.Chess.Runtime {
         /// including if the `player.Color` is unassigned.</returns>
         public static bool OwnsPiece(Player player, PieceType piece) {
             var pieceVal = (int) piece;
-            if (player.Color == PlayerType.White && 2 <= pieceVal && pieceVal <= 7)
+            if (player.Color == Color.White && 2 <= pieceVal && pieceVal <= 7)
                 return true;
-            if (player.Color == PlayerType.Black && pieceVal > 7)
+            if (player.Color == Color.Black && pieceVal > 7)
                 return true;
             return false;
         }
 
+        public static Color ColorOfPiece(PieceType piece) {
+            var pieceVal = (int) piece;
+            if (2 <= pieceVal && pieceVal <= 7)
+                return Color.White;
+            if ( pieceVal > 7)
+                return Color.Black;
+            return Color.Unassigned;
+        }
+        
+        /// <summary>
+        /// Check whether the PieceType of the move capture is of a piece or not by checking the int value.
+        /// </summary>
+        /// <param name="move"></param>
+        /// <returns></returns>
         public static bool MoveCaptures(Move move) => (int) move.Capture >= 2;
-        #endregion
-
-        #region Utility
-
+        
         public static Player GetOtherPlayer(GameState state, Player player) {
             if (player == state.White) return state.Black;
             if (player == state.Black) return state.White;
@@ -65,6 +122,27 @@ namespace Source.Chess.Runtime {
             throw new Exception("Player object of state does not match the given player.");
         }
 
+        public static int GetPawnStartRow(Color player) {
+            switch (player) {
+                case Color.White:
+                    return 8;
+                case Color.Black:
+                    return 3;
+                default:
+                    throw new Exception("Handed unassigned player while trying to determine pawn direction.");
+            }
+        }
+
+        public static int GetPawnDirection(Color player) {
+            switch (player) {
+                case Color.White:
+                    return -1;
+                case Color.Black:
+                    return 1;
+                default:
+                    throw new Exception("Handed unassigned player while trying to determine pawn direction.");
+            }
+        }
 
         #endregion
     }

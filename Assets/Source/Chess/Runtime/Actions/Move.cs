@@ -1,4 +1,5 @@
 using Source.Chess.Runtime.Objects;
+using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 
 namespace Source.Chess.Runtime.Actions {
@@ -6,7 +7,7 @@ namespace Source.Chess.Runtime.Actions {
     /// Movement of a chess piece, which may cause a capture (No capture is given the "Empty" value).
     /// En-passant is included within the move rule.
     /// </summary>
-    public class Move {
+    public class Move : IAction {
         public Player Player;
         public Vector2Int Source { get; }
         public Vector2Int Target { get; }
