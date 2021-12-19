@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
+using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -36,6 +37,13 @@ namespace Source.Chess.Runtime {
 
     // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
     public static class Rules {
+
+        public static List<IStep<GameState>> Apply(GameState state, IAction action) {
+            var stepList = new List<IStep<GameState>>();
+            
+            throw new NotImplementedException();
+        }
+        
         #region Moves
 
         public static List<Move> GetPawnMoves(GameState state, Vector2Int source) {
