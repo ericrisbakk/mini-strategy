@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Source.StrategyFramework.Runtime.Representation;
 
-namespace Source.StrategyFramework.Runtime {
+namespace Source.StrategyFramework.Runtime.History {
     
     /// <summary>
     /// Linear history - keeps track of Action-Step tuples inside a list. Backtracking means the event is lost to time.
