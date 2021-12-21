@@ -1,5 +1,5 @@
 using System;
-using Source.StrategyFramework.Runtime;
+using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 
