@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
+using Source.Chess.Runtime.Steps;
+using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Source.Chess.Runtime {
     /// <summary>
@@ -37,13 +39,71 @@ namespace Source.Chess.Runtime {
 
     // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
     public static class Rules {
-
-        public static List<IStep<GameState>> Apply(GameState state, IAction action) {
-            var stepList = new List<IStep<GameState>>();
-            
-            throw new NotImplementedException();
-        }
         
+        /// <summary>
+        /// Updates the state and history with the results of applying the given action.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="history"></param>
+        /// <param name="action"></param>
+        /// <param name="validate"></param>
+        /// <returns></returns>
+        public static GameState Apply(GameState state, LinearHistory history, IAction action, bool validate) {
+            var stepList = new List<IStep>();
+            HandleStep(state, stepList, GetNextStep(state, history, action), validate);
+            
+            while (HasNextStep(state, history, stepList, out var step)) {
+                HandleStep(state, stepList, step, validate);
+            }
+            
+            history.Add(action, stepList);
+            return state;
+        }
+
+        private static void HandleStep(GameState state, List<IStep> stepList, IStep<GameState> step, 
+            bool validate) {
+            if (validate) step.ValidateForward(state);
+            step.Forward(state);
+            stepList.Add(step);
+        }
+
+        /// <summary>
+        /// Gets the next step based on the action given. There is a matching step for each action.
+        /// An action must result in a step - otherwise, it should never have been given.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="history"></param>
+        /// <param name="action"></param>
+        /// <returns>Step corresponding to action.</returns>
+        /// <exception cref="Exception"></exception>
+        public static IStep<GameState> GetNextStep(GameState state, LinearHistory history, IAction action) {
+            if (action is Move move)
+                return new PawnMoveStep(move);
+
+            throw new Exception("Could not get next step, action was not recognized.");
+        }
+
+        /// <summary>
+        /// Checks whether there is a next step, and if so, sets it as an out argument in `step`.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="history"></param>
+        /// <param name="stepList"></param>
+        /// <param name="step"></param>
+        /// <returns>True if there is a next step, false otherwise.</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static bool HasNextStep(GameState state, LinearHistory history, List<IStep> stepList,
+            out IStep<GameState> step) {
+            if (history.Events.Last().Item2.Last() is ChangePlayerStep) {
+                step = null;
+                return false;
+            }
+            else {
+                step = new ChangePlayerStep();
+                return true;
+            }
+        }
+
         #region Moves
 
         public static List<Move> GetPawnMoves(GameState state, Vector2Int source) {
