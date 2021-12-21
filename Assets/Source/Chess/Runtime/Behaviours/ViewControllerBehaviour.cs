@@ -4,7 +4,7 @@ using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 
 namespace Source.Chess.Runtime.Behaviours {
-    public class GameBehaviour : MonoBehaviour {
+    public class ViewControllerBehaviour : MonoBehaviour {
         [NonSerialized] public GameState State;
         [NonSerialized] public LinearHistory History;
 
