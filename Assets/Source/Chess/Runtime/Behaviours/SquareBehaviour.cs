@@ -11,8 +11,12 @@ namespace Source.Chess.Runtime.Behaviours {
     }
     
     public class SquareBehaviour : MonoBehaviour {
-        public Colors DefaultColors { get; set; }
-        public Colors HighlightColors { get; set; }
+
+        #region Variables
+        
+        public UnityEngine.Color invisible;
+
+        #region Hookups
         
         public Image face;
         public Image highlight;
@@ -20,10 +24,36 @@ namespace Source.Chess.Runtime.Behaviours {
         public Image rightEdge;
         public Image lowerEdge;
         public Image leftEdge;
+        
+        #endregion
+
+        public Colors defaultColors;
+        public Vector2Int position;
+        
+        #region State
+        
+        [NonSerialized] public Colors HighlightColors;
+        private Image[] _edges;
+
+        #endregion
+        
+        #endregion
+        
+#if UNITY_EDITOR
+        
+        public void UpdateDefaultColors() {
+            face.color = defaultColors.face;
+            highlight.color = invisible;
+            upperEdge.color = invisible;
+            rightEdge.color = invisible;
+            lowerEdge.color = invisible;
+            leftEdge.color = invisible;
+        }
+#endif
 
         public void Highlight(Colors highlightColors, bool newFace, bool upper, bool right, bool lower, bool left) {
             HighlightColors = highlightColors;
-            face.color = newFace ? HighlightColors.face : DefaultColors.face;
+            highlight.color = newFace ? HighlightColors.face : invisible;
             SetEdgeHighlight(upperEdge, upper);
             SetEdgeHighlight(rightEdge, right);
             SetEdgeHighlight(lowerEdge, lower);
@@ -31,15 +61,27 @@ namespace Source.Chess.Runtime.Behaviours {
         }
 
         public void ClearHighlight() {
-            face.color = DefaultColors.face;
-            SetEdgeHighlight(upperEdge, false);
-            SetEdgeHighlight(rightEdge, false);
-            SetEdgeHighlight(lowerEdge, false);
-            SetEdgeHighlight(leftEdge, false);
+            highlight.color = invisible;
+            foreach (var edge in _edges) {
+                SetEdgeHighlight(edge, false);
+            }
         }
 
-        private void SetEdgeHighlight(Image edge, bool highlight) {
-            edge.color = highlight ? HighlightColors.edges : DefaultColors.edges;
+        private void SetEdgeHighlight(Image edge, bool highlighted) {
+            edge.color = highlighted ? HighlightColors.edges : defaultColors.edges;
         }
+
+        #region Unity
+
+        private void Awake() {
+            _edges = new[] {
+                upperEdge,
+                rightEdge,
+                lowerEdge,
+                leftEdge
+            };
+        }
+
+        #endregion
     }
 }
