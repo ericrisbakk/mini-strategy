@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Source.Chess.Runtime.Behaviours {
@@ -12,12 +13,14 @@ namespace Source.Chess.Runtime.Behaviours {
     
     public class SquareBehaviour : MonoBehaviour {
 
+        
         #region Variables
         
         public UnityEngine.Color invisible;
 
         #region Hookups
-        
+
+        public EventTrigger eventTrigger;
         public Image face;
         public Image highlight;
         public Image upperEdge;
@@ -39,8 +42,18 @@ namespace Source.Chess.Runtime.Behaviours {
         
         #endregion
         
-#if UNITY_EDITOR
+        public Action<Vector2Int> PointerClicked;
+        public Action<Vector2Int> PointerEntered;
+        public Action<Vector2Int> PointerExited;
         
+        public void PointerClick() { PointerClicked?.Invoke(position); }
+        
+        public void PointerEnter() { PointerEntered?.Invoke(position); }
+        
+        public void PointerExit() { PointerExited?.Invoke(position); }
+        
+#if UNITY_EDITOR
+
         public void UpdateDefaultColors() {
             face.color = defaultColors.face;
             highlight.color = invisible;
@@ -70,6 +83,7 @@ namespace Source.Chess.Runtime.Behaviours {
         private void SetEdgeHighlight(Image edge, bool highlighted) {
             edge.color = highlighted ? HighlightColors.edges : defaultColors.edges;
         }
+
 
         #region Unity
 
