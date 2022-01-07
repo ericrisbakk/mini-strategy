@@ -15,9 +15,8 @@ namespace Source.Chess.Runtime.Behaviours {
         public SquareBehaviour[,] Squares;
         
         #endregion
-        
-        
-        
+
+#if UNITY_EDITOR
         [Button(ButtonSizes.Medium)]
         public void GenerateBoard() {
             for (int i = transform.childCount; i > 0; i--) {
@@ -40,5 +39,6 @@ namespace Source.Chess.Runtime.Behaviours {
                 sBehaviour.UpdateDefaultColors();
             }
         }
+#endif
     }
 }
