@@ -36,24 +36,28 @@ namespace Source.Chess.Runtime.Behaviours {
         #region State
         
         [NonSerialized] public Colors HighlightColors;
+        // Convenient short-hand.
         private Image[] _edges;
 
         #endregion
         
         #endregion
         
-        public Action<Vector2Int> PointerClicked;
-        public Action<Vector2Int> PointerEntered;
-        public Action<Vector2Int> PointerExited;
+        public Action<Vector2Int> OnPointerClick;
+        public Action<Vector2Int> OnPointerEnter;
+        public Action<Vector2Int> OnPointerExit;
         
-        public void PointerClick() { PointerClicked?.Invoke(position); }
+        public void PointerClick() { OnPointerClick?.Invoke(position); }
         
-        public void PointerEnter() { PointerEntered?.Invoke(position); }
+        public void PointerEnter() { OnPointerEnter?.Invoke(position); }
         
-        public void PointerExit() { PointerExited?.Invoke(position); }
+        public void PointerExit() { OnPointerExit?.Invoke(position); }
         
 #if UNITY_EDITOR
 
+        /// <summary>
+        /// Set face color to the default color, then set all highlight images to invisible.
+        /// </summary>
         public void UpdateDefaultColors() {
             face.color = defaultColors.face;
             highlight.color = invisible;
@@ -64,6 +68,9 @@ namespace Source.Chess.Runtime.Behaviours {
         }
 #endif
 
+        /// <summary>
+        /// Update highlight colors, then set highlights based on given `bool` values.
+        /// </summary>
         public void Highlight(Colors highlightColors, bool newFace, bool upper, bool right, bool lower, bool left) {
             HighlightColors = highlightColors;
             highlight.color = newFace ? HighlightColors.face : invisible;
@@ -73,6 +80,9 @@ namespace Source.Chess.Runtime.Behaviours {
             SetEdgeHighlight(leftEdge, left);
         }
 
+        /// <summary>
+        /// Set all highlights to invisible.
+        /// </summary>
         public void ClearHighlight() {
             highlight.color = invisible;
             foreach (var edge in _edges) {
@@ -80,8 +90,11 @@ namespace Source.Chess.Runtime.Behaviours {
             }
         }
 
+        /// <summary>
+        /// Set a given image to either the highlight color, or invisible, based on bool value.
+        /// </summary>
         private void SetEdgeHighlight(Image edge, bool highlighted) {
-            edge.color = highlighted ? HighlightColors.edges : defaultColors.edges;
+            edge.color = highlighted ? HighlightColors.edges : invisible;
         }
 
 
