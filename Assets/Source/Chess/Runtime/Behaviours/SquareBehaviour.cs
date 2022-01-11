@@ -1,43 +1,114 @@
 using System;
 using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Source.Chess.Runtime.Behaviours {
     [Serializable]
     public struct Colors {
-        public UnityEngine.Color faceDefault;
-        public UnityEngine.Color faceHighlight;
-        public UnityEngine.Color edgeDefault;
-        public UnityEngine.Color edgeHighlight;
+        public UnityEngine.Color face;
+        public UnityEngine.Color edges;
     }
     
-    public class SquareBehaviour : MonoBehaviour { 
-        public Colors Colors { get; set; }
+    public class SquareBehaviour : MonoBehaviour {
 
+        
+        #region Variables
+        
+        public UnityEngine.Color invisible;
+
+        #region Hookups
+
+        public EventTrigger eventTrigger;
         public Image face;
+        public Image highlight;
         public Image upperEdge;
         public Image rightEdge;
         public Image lowerEdge;
         public Image leftEdge;
+        
+        #endregion
 
-        public void Highlight(bool newFace, bool upper, bool right, bool lower, bool left) {
-            face.color = newFace ? Colors.faceHighlight : Colors.faceDefault;
+        public Colors defaultColors;
+        public Vector2Int position;
+        
+        #region State
+        
+        [NonSerialized] public Colors HighlightColors;
+        // Convenient short-hand.
+        private Image[] _edges;
+
+        #endregion
+        
+        #endregion
+        
+        public Action<Vector2Int> OnPointerClick;
+        public Action<Vector2Int> OnPointerEnter;
+        public Action<Vector2Int> OnPointerExit;
+        
+        public void PointerClick() { OnPointerClick?.Invoke(position); }
+        
+        public void PointerEnter() { OnPointerEnter?.Invoke(position); }
+        
+        public void PointerExit() { OnPointerExit?.Invoke(position); }
+        
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// Set face color to the default color, then set all highlight images to invisible.
+        /// </summary>
+        public void UpdateDefaultColors() {
+            face.color = defaultColors.face;
+            highlight.color = invisible;
+            upperEdge.color = invisible;
+            rightEdge.color = invisible;
+            lowerEdge.color = invisible;
+            leftEdge.color = invisible;
+        }
+#endif
+
+        /// <summary>
+        /// Update highlight colors, then set highlights based on given `bool` values.
+        /// </summary>
+        public void Highlight(Colors highlightColors, bool newFace, bool upper, bool right, bool lower, bool left) {
+            HighlightColors = highlightColors;
+            highlight.color = newFace ? HighlightColors.face : invisible;
             SetEdgeHighlight(upperEdge, upper);
             SetEdgeHighlight(rightEdge, right);
             SetEdgeHighlight(lowerEdge, lower);
             SetEdgeHighlight(leftEdge, left);
         }
 
+        /// <summary>
+        /// Set all highlights to invisible.
+        /// </summary>
         public void ClearHighlight() {
-            face.color = Colors.faceDefault;
-            SetEdgeHighlight(upperEdge, false);
-            SetEdgeHighlight(rightEdge, false);
-            SetEdgeHighlight(lowerEdge, false);
-            SetEdgeHighlight(leftEdge, false);
+            highlight.color = invisible;
+            foreach (var edge in _edges) {
+                SetEdgeHighlight(edge, false);
+            }
         }
 
-        private void SetEdgeHighlight(Image edge, bool highlight) {
-            edge.color = highlight ? Colors.edgeHighlight : Colors.edgeDefault;
+        /// <summary>
+        /// Set a given image to either the highlight color, or invisible, based on bool value.
+        /// </summary>
+        private void SetEdgeHighlight(Image edge, bool highlighted) {
+            edge.color = highlighted ? HighlightColors.edges : invisible;
         }
+
+
+        #region Unity
+
+        private void Awake() {
+            _edges = new[] {
+                upperEdge,
+                rightEdge,
+                lowerEdge,
+                leftEdge
+            };
+        }
+
+        #endregion
     }
 }

@@ -39,6 +39,8 @@ namespace Source.Chess.Runtime {
 
     // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
     public static class Rules {
+
+        #region Steps
         
         /// <summary>
         /// Updates the state and history with the results of applying the given action.
@@ -103,9 +105,27 @@ namespace Source.Chess.Runtime {
                 return true;
             }
         }
+        
+        #endregion
 
+        #region Action
+
+        public static List<IAction> GetActions(GameState state, Vector2Int source) {
+            var actions = new List<IAction>();
+            var moves = new List<IAction>(GetMoves(state, source));
+            actions.AddRange(moves);
+
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        
         #region Moves
 
+        public static List<Move> GetMoves(GameState state, Vector2Int source) {
+            throw new NotImplementedException();
+        }
+        
         public static List<Move> GetPawnMoves(GameState state, Vector2Int source) {
             var piece = state.Square(source);
             var player = state.CurrentPlayer;
@@ -132,7 +152,6 @@ namespace Source.Chess.Runtime {
             var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
             if (OwnsPiece(GetOtherPlayer(state, player), state.Square(rightCapture)))
                 moveList.Add(new Move(player, PieceType.WPawn, source, rightCapture));
-
 
             return moveList;
         }
