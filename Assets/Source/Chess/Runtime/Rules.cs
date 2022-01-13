@@ -96,7 +96,13 @@ namespace Source.Chess.Runtime {
         /// <exception cref="NotImplementedException"></exception>
         public static bool HasNextStep(GameState state, LinearHistory history, List<IStep> stepList,
             out IStep<GameState> step) {
-            if (history.Events.Last().Item2.Last() is ChangePlayerStep) {
+            var lastStep = history.LastStep;
+            
+            if (lastStep is ChangePlayerStep) {
+                step = null;
+                return false;
+            }
+            else if (lastStep is MoveStep move && PawnUpForPromotion(state, move.Move.Target)) {
                 step = null;
                 return false;
             }
@@ -117,7 +123,7 @@ namespace Source.Chess.Runtime {
 
             throw new NotImplementedException();
         }
-
+        
         #endregion
         
         #region Moves
@@ -201,8 +207,27 @@ namespace Source.Chess.Runtime {
             throw new Exception("Player object of state does not match the given player.");
         }
 
-        public static int GetPawnStartRow(Color player) {
-            switch (player) {
+        public static Color GetOtherColor(Color color) {
+            if (color == Color.White) return Color.Black;
+            if (color == Color.Black) return Color.White;
+            
+            throw new Exception("Color given should be black or white.");
+        }
+
+        public static bool PawnUpForPromotion(GameState state, Vector2Int pos) {
+            var target = state.Squares()[pos.x, pos.y];
+            var color = ColorOfPiece(target);
+            var targetRow = GetPawnStartRow(GetOtherColor(color));
+            var targetDirection = GetPawnDirection(color);
+            
+            if (target == PieceType.WPawn && pos.x == targetRow + targetDirection) return true;
+            if (target == PieceType.BPawn && pos.x == targetRow + targetDirection) return true;
+
+            return false;
+        }
+
+        public static int GetPawnStartRow(Color color) {
+            switch (color) {
                 case Color.White:
                     return 8;
                 case Color.Black:
@@ -212,8 +237,8 @@ namespace Source.Chess.Runtime {
             }
         }
 
-        public static int GetPawnDirection(Color player) {
-            switch (player) {
+        public static int GetPawnDirection(Color color) {
+            switch (color) {
                 case Color.White:
                     return -1;
                 case Color.Black:
