@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Source.StrategyFramework.Runtime.Representation;
 
 namespace Source.StrategyFramework.Runtime.History {
@@ -9,6 +10,9 @@ namespace Source.StrategyFramework.Runtime.History {
     /// </summary>
     public class LinearHistory {
         public List<Tuple<IAction, List<IStep>>> Events;
+        
+        public IStep LastStep => Events.Last().Item2.Last();
+
 
         public LinearHistory() {
             Events = new List<Tuple<IAction, List<IStep>>>();
