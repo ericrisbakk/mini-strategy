@@ -27,16 +27,17 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
 
+        /// <summary>
+        /// Validation shared by both backwards and forwards validation.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public virtual GameState CommonValidation(GameState state) {
-            Assert.AreNotEqual(Move.Player.Color, Color.Unassigned, 
-                "Player must have a color.");
-            Assert.IsTrue(Rules.OwnsPiece(Move.Player, Move.Piece),
-                "Player and piece color do not match.");
-            Assert.IsTrue(Move.Capture != PieceType.OutOfBounds,
-                "Out of bounds cannot be captured!");
+            StepValidation.PlayerColorAssigned(Move.Player);
+            StepValidation.OwnsPiece(Move.Player, Move.Piece);
+            StepValidation.InBounds(Move.Capture, "Capture");
             if (Rules.MoveCaptures(Move))
-                Assert.IsTrue(Rules.OwnsPiece(Rules.GetOtherPlayer(state, Move.Player), Move.Capture), 
-                    "The piece captured must belong to the other player.");
+                StepValidation.OpposingPieces(Move.Piece, Move.Capture);
             return state;
         }
         
