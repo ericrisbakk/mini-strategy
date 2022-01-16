@@ -1,5 +1,6 @@
-using Source.Chess.Runtime.Actions;
+using System.Linq;
 using Source.Chess.Runtime.Objects;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Steps {
@@ -36,6 +37,16 @@ namespace Source.Chess.Runtime.Steps {
             var c2 = Rules.GetOtherColor(c1);
             Assert.IsTrue(c1 == Color.White && c2 == Color.Black || c1 == Color.Black && c2 == Color.White,
                 $"Pieces {p1} and {p2} should be opposing pieces.");
+        }
+
+        public static void PositionIsPiece(PieceType[,] squares, Vector2Int pos, PieceType piece) {
+            Assert.IsTrue(squares[pos.x, pos.y] == piece,
+                $"Position ({pos.x}, {pos.y}) is supposed to be of value {piece}.");
+        }
+        
+        public static void PositionIsPiece(PieceType[,] squares, Vector2Int pos, PieceType[] pieces) {
+            Assert.IsTrue( pieces.Contains(squares[pos.x, pos.y]),
+                $"Position ({pos.x}, {pos.y}) is supposed to be of value in {pieces}.");
         }
     }
 }

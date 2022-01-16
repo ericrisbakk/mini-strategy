@@ -45,10 +45,8 @@ namespace Source.Chess.Runtime.Steps {
             CommonValidation(state);
             var s = Move.Source;
             var t = Move.Target;
-            Assert.IsTrue(state.Squares()[t.x, t.y] == Move.Piece,
-                "[Backward] Target piece does not match piece of move.");
-            Assert.IsTrue(state.Squares()[s.x, s.y] == PieceType.Empty,
-                "[Backward] Source must be empty.");
+            StepValidation.PositionIsPiece(state.Squares(), t, Move.Piece);
+            StepValidation.PositionIsPiece(state.Squares(), s, PieceType.Empty);
 
             return state;
         }
@@ -57,12 +55,10 @@ namespace Source.Chess.Runtime.Steps {
             CommonValidation(state);
             var s = Move.Source;
             var t = Move.Target;
-            Assert.IsTrue(state.Squares()[s.x, s.y] == Move.Piece,
-                "Source piece must match the piece value of the move.");
+            StepValidation.PositionIsPiece(state.Squares(), s, Move.Piece);
             Assert.IsTrue(state.Squares()[t.x, t.y] != PieceType.OutOfBounds,
                 "Move target cannot be out of bounds.");
-            Assert.IsTrue(state.Squares()[t.x, t.y] == Move.Capture,
-                "The piece on target position must match the capture value of the move.");
+            StepValidation.PositionIsPiece(state.Squares(), t, Move.Capture);
 
             return state;
         }
