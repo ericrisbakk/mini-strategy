@@ -27,16 +27,17 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
 
+        /// <summary>
+        /// Validation shared by both backwards and forwards validation.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public virtual GameState CommonValidation(GameState state) {
-            Assert.AreNotEqual(Move.Player.Color, Color.Unassigned, 
-                "Player must have a color.");
-            Assert.IsTrue(Rules.OwnsPiece(Move.Player, Move.Piece),
-                "Player and piece color do not match.");
-            Assert.IsTrue(Move.Capture != PieceType.OutOfBounds,
-                "Out of bounds cannot be captured!");
+            StepValidation.PlayerColorAssigned(Move.Player);
+            StepValidation.OwnsPiece(Move.Player, Move.Piece);
+            StepValidation.InBounds(Move.Capture, "Capture");
             if (Rules.MoveCaptures(Move))
-                Assert.IsTrue(Rules.OwnsPiece(Rules.GetOtherPlayer(state, Move.Player), Move.Capture), 
-                    "The piece captured must belong to the other player.");
+                StepValidation.OpposingPieces(Move.Piece, Move.Capture);
             return state;
         }
         
@@ -44,10 +45,8 @@ namespace Source.Chess.Runtime.Steps {
             CommonValidation(state);
             var s = Move.Source;
             var t = Move.Target;
-            Assert.IsTrue(state.Squares()[t.x, t.y] == Move.Piece,
-                "[Backward] Target piece does not match piece of move.");
-            Assert.IsTrue(state.Squares()[s.x, s.y] == PieceType.Empty,
-                "[Backward] Source must be empty.");
+            StepValidation.PositionIsPiece(state.Squares(), t, Move.Piece);
+            StepValidation.PositionIsPiece(state.Squares(), s, PieceType.Empty);
 
             return state;
         }
@@ -56,12 +55,10 @@ namespace Source.Chess.Runtime.Steps {
             CommonValidation(state);
             var s = Move.Source;
             var t = Move.Target;
-            Assert.IsTrue(state.Squares()[s.x, s.y] == Move.Piece,
-                "Source piece must match the piece value of the move.");
+            StepValidation.PositionIsPiece(state.Squares(), s, Move.Piece);
             Assert.IsTrue(state.Squares()[t.x, t.y] != PieceType.OutOfBounds,
                 "Move target cannot be out of bounds.");
-            Assert.IsTrue(state.Squares()[t.x, t.y] == Move.Capture,
-                "The piece on target position must match the capture value of the move.");
+            StepValidation.PositionIsPiece(state.Squares(), t, Move.Capture);
 
             return state;
         }

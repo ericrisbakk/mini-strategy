@@ -8,6 +8,8 @@ namespace Source.Chess.Runtime.Actions {
         public Vector2Int Source { get; }
         public Vector2Int Target { get; }
 
+        public Vector2Int Capture => new Vector2Int(Target.x - Rules.GetPawnDirection(Player.Color), Target.y);
+        
         public EnPassant(Player player, Vector2Int source, Vector2Int target) {
             Player = player;
             Source = source;
