@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using Source.TicTacToe.Runtime.Actions;
 using Source.TicTacToe.Runtime.Objects;
@@ -9,16 +10,16 @@ namespace Source.TicTacToe.Runtime {
 
         #region Play
 
-        public static GameState Apply(GameState state, IAction action, out IStep<GameState> step) {
+        public static GameState Apply(GameState state, LinearHistory history, IAction action, out IStep<GameState, LinearHistory> step) {
             step = new DrawStep((Draw) action);
-            step.ValidateForward(state);
-            return step.Forward(state);
+            step.ValidateForward(state, history);
+            return step.Forward(state, history);
         }
 
         // TODO: The changing of the game result should be a step on its own, such that it can be reverted properly.
-        public static GameState Undo(GameState state, IStep<GameState> step) {
-            step.ValidateBackward(state);
-            step.Backward(state);
+        public static GameState Undo(GameState state, LinearHistory history, IStep<GameState, LinearHistory> step) {
+            step.ValidateBackward(state, history);
+            step.Backward(state, history);
             return state;
         }
 

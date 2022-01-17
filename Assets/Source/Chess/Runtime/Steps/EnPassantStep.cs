@@ -1,17 +1,18 @@
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
+using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Steps {
-    public class EnPassantStep : IStep<GameState> {
+    public class EnPassantStep : IStep<GameState, LinearHistory> {
 
         public EnPassant EnPassant { get; }
 
         public EnPassantStep(EnPassant enPassant) {
             EnPassant = enPassant;
         }
-        public GameState Forward(GameState state) {
+        public GameState Forward(GameState state, LinearHistory history) {
             var s = EnPassant.Source;
             var t = EnPassant.Target;
             var c = EnPassant.Capture;
@@ -24,7 +25,7 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
 
-        public GameState Backward(GameState state) {
+        public GameState Backward(GameState state, LinearHistory history) {
             var s = EnPassant.Source;
             var t = EnPassant.Target;
             var c = EnPassant.Capture;
@@ -38,7 +39,7 @@ namespace Source.Chess.Runtime.Steps {
         }
 
         // TODO: Historical validation - this move can only be done if the captured pawn recently moved.
-        public GameState ValidateForward(GameState state) {
+        public GameState ValidateForward(GameState state, LinearHistory history) {
             CommonValidation(state);
             var squares = state.Squares();
             var s = EnPassant.Source;
@@ -53,7 +54,7 @@ namespace Source.Chess.Runtime.Steps {
             throw new System.NotImplementedException();
         }
 
-        public GameState ValidateBackward(GameState state) {
+        public GameState ValidateBackward(GameState state, LinearHistory history) {
             CommonValidation(state);
             throw new System.NotImplementedException();
         }

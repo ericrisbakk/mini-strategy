@@ -1,11 +1,12 @@
 using System;
+using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using Source.TicTacToe.Runtime.Actions;
 using Source.TicTacToe.Runtime.Objects;
 
 namespace Source.TicTacToe.Runtime {
 
-    public class DrawStep : IStep<GameState> {
+    public class DrawStep : IStep<GameState, LinearHistory> {
 
         public Draw Action { get; }
         
@@ -13,7 +14,7 @@ namespace Source.TicTacToe.Runtime {
             Action = action;
         }
         
-        public GameState Forward(GameState state) {
+        public GameState Forward(GameState state, LinearHistory history) {
             var pos = Action.Position;
 
             state.GetBoard()[pos.x, pos.y].State = Action.Player.IsPlayer0 ? SquareState.Nought : SquareState.Cross;
@@ -22,7 +23,7 @@ namespace Source.TicTacToe.Runtime {
             return state;
         }
 
-        public GameState ValidateForward(GameState state) {
+        public GameState ValidateForward(GameState state, LinearHistory history) {
             CommonValidation(state);
             if (state.Result != GameResult.Undecided)
                 throw new Exception("[Validation][Step][Forward] The game is already over");
@@ -32,7 +33,7 @@ namespace Source.TicTacToe.Runtime {
             return state;
         }
 
-        public GameState Backward(GameState state) {
+        public GameState Backward(GameState state, LinearHistory history) {
             var pos = Action.Position;
 
             state.GetBoard()[pos.x, pos.y].State = SquareState.Empty;
@@ -42,7 +43,7 @@ namespace Source.TicTacToe.Runtime {
             return state;
         }
 
-        public GameState ValidateBackward(GameState state) {
+        public GameState ValidateBackward(GameState state, LinearHistory history) {
             CommonValidation(state);
             if (state.MoveCounter <= 0)
                 throw new Exception("[Validation][Step][Backward] No moves have been made.");

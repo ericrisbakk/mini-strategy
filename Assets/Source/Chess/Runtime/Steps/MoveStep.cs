@@ -1,17 +1,18 @@
 using System;
 using Source.Chess.Runtime.Actions;
+using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Steps {
-    public abstract class MoveStep : IStep<GameState> {
+    public abstract class MoveStep : IStep<GameState, LinearHistory> {
         public Move Move { get; }
         
         public MoveStep(Move move) {
             this.Move = move;
         }
         
-        public virtual GameState Forward(GameState state) {
+        public virtual GameState Forward(GameState state, LinearHistory history) {
             var s = Move.Source;
             var t = Move.Target;
             state.Squares()[s.x, s.y] = PieceType.Empty;
@@ -19,7 +20,7 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
         
-        public virtual GameState Backward(GameState state) {
+        public virtual GameState Backward(GameState state, LinearHistory history) {
             var s = Move.Source;
             var t = Move.Target;
             state.Squares()[s.x, s.y] = Move.Piece;
@@ -41,7 +42,7 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
         
-        public virtual GameState ValidateBackward(GameState state) {
+        public virtual GameState ValidateBackward(GameState state, LinearHistory history) {
             CommonValidation(state);
             var s = Move.Source;
             var t = Move.Target;
@@ -51,7 +52,7 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
 
-        public virtual GameState ValidateForward(GameState state) {
+        public virtual GameState ValidateForward(GameState state, LinearHistory history) {
             CommonValidation(state);
             var s = Move.Source;
             var t = Move.Target;

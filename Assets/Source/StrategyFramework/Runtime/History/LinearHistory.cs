@@ -8,7 +8,7 @@ namespace Source.StrategyFramework.Runtime.History {
     /// <summary>
     /// Linear history - keeps track of Action-Step tuples inside a list. Backtracking means the event is lost to time.
     /// </summary>
-    public class LinearHistory {
+    public class LinearHistory : IHistory {
         public List<Tuple<IAction, List<IStep>>> Events;
         
         public IStep LastStep => Events.Last().Item2.Last();

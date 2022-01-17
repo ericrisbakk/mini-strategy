@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using Source.TicTacToe.Runtime.Actions;
 using Source.TicTacToe.Runtime.Objects;
@@ -21,13 +22,13 @@ namespace Source.TicTacToe.Runtime.Behaviours {
         
         public List<SquareBehaviour> squares;
 
-        private List<IStep<GameState>> _history;
+        private LinearHistory _history;
         
         #endregion
 
         private void Awake() {
             State = new GameState();
-            _history = new List<IStep<GameState>>();
+            _history = new LinearHistory();
             
             // TODO: Rewrite s.t. this is not dependent on the implicit order of `squares`.
             for (int i = 0; i < 3; i++) {
@@ -43,10 +44,10 @@ namespace Source.TicTacToe.Runtime.Behaviours {
         }
 
         public void Undo() {
-            if (_history.Count > 0) {
-                var lastStep = _history[_history.Count-1];
-                Rules.Undo(State, lastStep);
-                _history.RemoveAt(_history.Count-1);
+            if (State.MoveCounter > 0) {
+                var lastStep = (IStep<GameState, LinearHistory>) _history.LastStep;
+                Rules.Undo(State, _history, lastStep);
+                _history.Backtrack();
                 var action = ((DrawStep) lastStep).Action;
                 var isPlayer0 = action.Player.IsPlayer0;
                 var pos = action.Position;
@@ -68,8 +69,8 @@ namespace Source.TicTacToe.Runtime.Behaviours {
             var player = State.GetCurrentPlayer;
             var action = new Draw(pos, player);
 
-            Rules.Apply(State, action, out var step);
-            _history.Add(step);
+            Rules.Apply(State, _history, action, out var step);
+            _history.Add(action, new List<IStep>(new []{step}));
             
             Debug.Log("Move " + State.MoveCounter + ": Player " + (State.Player0Turn ? "0" : "X") 
                       + "'s turn, tried to draw at " + pos);

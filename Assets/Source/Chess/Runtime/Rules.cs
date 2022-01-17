@@ -52,20 +52,20 @@ namespace Source.Chess.Runtime {
         /// <returns></returns>
         public static GameState Apply(GameState state, LinearHistory history, IAction action, bool validate) {
             var stepList = new List<IStep>();
-            HandleStep(state, stepList, GetNextStep(state, history, action), validate);
+            HandleStep(state, history, stepList, GetNextStep(state, history, action), validate);
             
             while (HasNextStep(state, history, stepList, out var step)) {
-                HandleStep(state, stepList, step, validate);
+                HandleStep(state, history, stepList, step, validate);
             }
             
             history.Add(action, stepList);
             return state;
         }
 
-        private static void HandleStep(GameState state, List<IStep> stepList, IStep<GameState> step, 
+        private static void HandleStep(GameState state, LinearHistory history, List<IStep> stepList, IStep<GameState, LinearHistory> step, 
             bool validate) {
-            if (validate) step.ValidateForward(state);
-            step.Forward(state);
+            if (validate) step.ValidateForward(state, history);
+            step.Forward(state, history);
             stepList.Add(step);
         }
 
@@ -78,7 +78,7 @@ namespace Source.Chess.Runtime {
         /// <param name="action"></param>
         /// <returns>Step corresponding to action.</returns>
         /// <exception cref="Exception"></exception>
-        public static IStep<GameState> GetNextStep(GameState state, LinearHistory history, IAction action) {
+        public static IStep<GameState, LinearHistory> GetNextStep(GameState state, LinearHistory history, IAction action) {
             if (action is Move move)
                 return new PawnMoveStep(move);
 
@@ -95,7 +95,7 @@ namespace Source.Chess.Runtime {
         /// <returns>True if there is a next step, false otherwise.</returns>
         /// <exception cref="NotImplementedException"></exception>
         public static bool HasNextStep(GameState state, LinearHistory history, List<IStep> stepList,
-            out IStep<GameState> step) {
+            out IStep<GameState, LinearHistory> step) {
             var lastStep = history.LastStep;
             
             if (lastStep is ChangePlayerStep) {
