@@ -12,6 +12,7 @@ namespace Source.StrategyFramework.Runtime.History {
         public List<Tuple<IAction, List<IStep>>> Events;
         
         public IStep LastStep => Events.Last().Item2.Last();
+        public Tuple<IAction, List<IStep>> LastAction => Events.Last();
 
 
         public LinearHistory() {

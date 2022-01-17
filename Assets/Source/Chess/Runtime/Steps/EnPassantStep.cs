@@ -1,5 +1,4 @@
 using Source.Chess.Runtime.Actions;
-using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
@@ -51,7 +50,21 @@ namespace Source.Chess.Runtime.Steps {
             StepValidation.PositionIsPiece(state.Squares(), c, new [] {PieceType.WPawn, PieceType.BPawn});
             StepValidation.OpposingPieces(squares[s.x, s.y], squares[c.x, c.y]);
             StepValidation.PositionIsPiece(state.Squares(), t, PieceType.Empty);
-            throw new System.NotImplementedException();
+
+            var lastAction = history.LastAction;
+            var step = lastAction.Item2[0];
+            Assert.IsTrue(step is MoveStep, "EnPassant requires last action to be a MoveStep.");
+            var move = (MoveStep) step;
+            var otherColor = move.Move.Player.Color;
+            var otherStart = Rules.GetPawnStartRow(otherColor);
+            
+            StepValidation.PlayerIsColor(Rules.GetOtherPlayer(state, EnPassant.Player), otherColor);
+            Assert.IsTrue(move.Move.Source.x == otherStart,
+                "Other pawn must have started from starting row.");
+            Assert.IsTrue(move.Move.Target.x == otherStart + 2*Rules.GetPawnDirection(otherColor),
+                "Other pawn must have moved ahead two spaces.");
+
+            return state;
         }
 
         public GameState ValidateBackward(GameState state, LinearHistory history) {

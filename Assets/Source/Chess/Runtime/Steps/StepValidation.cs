@@ -13,6 +13,11 @@ namespace Source.Chess.Runtime.Steps {
                 "Player must have a color.");
         }
 
+        public static void PlayerIsColor(Player player, Color color) {
+            Assert.IsTrue(player.Color == color,
+                $"Player color was not value {color}.");
+        }
+
         /// <summary>
         /// Asserts that `piece` belongs to the `player`.
         /// </summary>
