@@ -20,6 +20,7 @@ namespace Source.Chess.Runtime.Steps {
             state.Squares()[s.x, s.y] = PieceType.Empty;
             state.Squares()[t.x, t.y] = color == Color.White ? PieceType.WPawn : PieceType.BPawn;
             state.Squares()[c.x, c.y] = PieceType.Empty;
+            state.ActionCount += 1;
 
             return state;
         }
@@ -33,25 +34,47 @@ namespace Source.Chess.Runtime.Steps {
             state.Squares()[s.x, s.y] = color == Color.White ? PieceType.WPawn : PieceType.BPawn;
             state.Squares()[t.x, t.y] = PieceType.Empty;
             state.Squares()[c.x, c.y] = color == Color.White ? PieceType.BPawn : PieceType.WPawn;
+            state.ActionCount -= 1;
 
             return state;
         }
-
-        // TODO: Historical validation - this move can only be done if the captured pawn recently moved.
+        
         public GameState ValidateForward(GameState state, LinearHistory history) {
-            CommonValidation(state);
+            CommonValidation(state, history, true);
             var squares = state.Squares();
             var s = EnPassant.Source;
             var t = EnPassant.Target;
             var c = EnPassant.Capture;
 
-            StepValidation.OwnsPiece(EnPassant.Player, state.Squares()[s.x, s.y]);
-            StepValidation.PositionIsPiece(state.Squares(), s, new [] {PieceType.WPawn, PieceType.BPawn});
-            StepValidation.PositionIsPiece(state.Squares(), c, new [] {PieceType.WPawn, PieceType.BPawn});
+            StepValidation.OwnsPiece(EnPassant.Player, squares[s.x, s.y]);
+            StepValidation.PositionIsPiece(squares, s, new [] {PieceType.WPawn, PieceType.BPawn});
+            StepValidation.PositionIsPiece(squares, c, new [] {PieceType.WPawn, PieceType.BPawn});
             StepValidation.OpposingPieces(squares[s.x, s.y], squares[c.x, c.y]);
-            StepValidation.PositionIsPiece(state.Squares(), t, PieceType.Empty);
+            StepValidation.PositionIsPiece(squares, t, PieceType.Empty);
 
-            var lastAction = history.LastAction;
+            return state;
+        }
+
+        public GameState ValidateBackward(GameState state, LinearHistory history) {
+            CommonValidation(state, history, false);
+            var squares = state.Squares();
+            var s = EnPassant.Source;
+            var t = EnPassant.Target;
+            var c = EnPassant.Capture;
+            
+            StepValidation.OwnsPiece(EnPassant.Player, squares[t.x, t.y]);
+            StepValidation.PositionIsPiece(squares, s, PieceType.Empty);
+            StepValidation.PositionIsPiece(squares, c, PieceType.Empty);
+            StepValidation.PositionIsPiece(squares, t, new [] {PieceType.WPawn, PieceType.BPawn});
+
+            return state;
+        }
+        
+        private GameState CommonValidation(GameState state, LinearHistory history, bool isForward) {
+            StepValidation.ActionCountValid(state, history);
+            StepValidation.PlayerColorAssigned(EnPassant.Player);
+            
+            var lastAction = history.Events[state.ActionCount - (isForward ? 1 : 2)];
             var step = lastAction.Item2[0];
             Assert.IsTrue(step is MoveStep, "EnPassant requires last action to be a MoveStep.");
             var move = (MoveStep) step;
@@ -63,17 +86,6 @@ namespace Source.Chess.Runtime.Steps {
                 "Other pawn must have started from starting row.");
             Assert.IsTrue(move.Move.Target.x == otherStart + 2*Rules.GetPawnDirection(otherColor),
                 "Other pawn must have moved ahead two spaces.");
-
-            return state;
-        }
-
-        public GameState ValidateBackward(GameState state, LinearHistory history) {
-            CommonValidation(state);
-            throw new System.NotImplementedException();
-        }
-
-        private GameState CommonValidation(GameState state) {
-            StepValidation.PlayerColorAssigned(EnPassant.Player);
 
             return state;
         }

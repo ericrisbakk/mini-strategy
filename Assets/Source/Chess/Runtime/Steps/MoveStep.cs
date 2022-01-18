@@ -17,6 +17,7 @@ namespace Source.Chess.Runtime.Steps {
             var t = Move.Target;
             state.Squares()[s.x, s.y] = PieceType.Empty;
             state.Squares()[t.x, t.y] = Move.Piece;
+            state.ActionCount += 1;
             return state;
         }
         
@@ -25,6 +26,7 @@ namespace Source.Chess.Runtime.Steps {
             var t = Move.Target;
             state.Squares()[s.x, s.y] = Move.Piece;
             state.Squares()[t.x, t.y] = Move.Capture;
+            state.ActionCount -= 1;
             return state;
         }
 
@@ -33,7 +35,8 @@ namespace Source.Chess.Runtime.Steps {
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public virtual GameState CommonValidation(GameState state) {
+        public virtual GameState CommonValidation(GameState state, LinearHistory history) {
+            StepValidation.ActionCountValid(state, history);
             StepValidation.PlayerColorAssigned(Move.Player);
             StepValidation.OwnsPiece(Move.Player, Move.Piece);
             StepValidation.InBounds(Move.Capture, "Capture");
@@ -43,7 +46,7 @@ namespace Source.Chess.Runtime.Steps {
         }
         
         public virtual GameState ValidateBackward(GameState state, LinearHistory history) {
-            CommonValidation(state);
+            CommonValidation(state, history);
             var s = Move.Source;
             var t = Move.Target;
             StepValidation.PositionIsPiece(state.Squares(), t, Move.Piece);
@@ -53,7 +56,7 @@ namespace Source.Chess.Runtime.Steps {
         }
 
         public virtual GameState ValidateForward(GameState state, LinearHistory history) {
-            CommonValidation(state);
+            CommonValidation(state, history);
             var s = Move.Source;
             var t = Move.Target;
             StepValidation.PositionIsPiece(state.Squares(), s, Move.Piece);
@@ -70,7 +73,7 @@ namespace Source.Chess.Runtime.Steps {
 
         // TODO: There actually needs to be a check for the En Passant case, but that requires outside information.
         // TODO: Consider a "Promise" test, that must happen immediately after.
-        public override GameState CommonValidation(GameState state) {
+        public override GameState CommonValidation(GameState state, LinearHistory history) {
             var s = Move.Source;
             var t = Move.Target;
             var start = Rules.GetPawnStartRow(Move.Player.Color);
@@ -97,7 +100,7 @@ namespace Source.Chess.Runtime.Steps {
     public class KnightMoveStep : MoveStep {
         public KnightMoveStep(Move move) : base(move) { }
 
-        public override GameState CommonValidation(GameState state) {
+        public override GameState CommonValidation(GameState state, LinearHistory history) {
             var s = Move.Source;
             var t = Move.Target;
             Assert.IsTrue((Math.Abs(t.x - s.x) == 2 && Math.Abs(t.y - s.y) == 1)

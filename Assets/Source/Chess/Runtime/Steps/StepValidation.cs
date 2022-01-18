@@ -1,10 +1,17 @@
 using System.Linq;
 using Source.Chess.Runtime.Objects;
+using Source.StrategyFramework.Runtime.History;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Steps {
     public static class StepValidation {
+
+        public static void ActionCountValid(GameState state, LinearHistory history) {
+            Assert.IsTrue(0 <= state.ActionCount && state.ActionCount < history.Events.Count,
+                "0 <= state.ActionCount && state.ActionCount < history.Events.Count");
+        }
+        
         /// <summary>
         /// Asserts that `player.Color` is not value `Color.Unassigned`.
         /// </summary>

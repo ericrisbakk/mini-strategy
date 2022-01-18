@@ -9,11 +9,13 @@ namespace Source.Chess.Runtime {
         public Board Board { get; }
         
         public Player CurrentPlayer { get; set; }
+        public int ActionCount { get; set; }
 
         public GameState() {
             White = new Player(Color.White);
             Black = new Player(Color.Black);
             Board = new Board();
+            ActionCount = 0;
         }
 
         public PieceType[,] Squares() => Board.Squares;
