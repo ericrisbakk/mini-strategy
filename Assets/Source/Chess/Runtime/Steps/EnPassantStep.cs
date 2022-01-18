@@ -76,7 +76,7 @@ namespace Source.Chess.Runtime.Steps {
             
             var lastAction = history.Events[state.ActionCount - (isForward ? 1 : 2)];
             var step = lastAction.Item2[0];
-            Assert.IsTrue(step is MoveStep, "EnPassant requires last action to be a MoveStep.");
+            StepValidation.StepIs(step, typeof(MoveStep));
             var move = (MoveStep) step;
             var otherColor = move.Move.Player.Color;
             var otherStart = Rules.GetPawnStartRow(otherColor);
