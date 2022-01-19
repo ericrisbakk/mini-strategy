@@ -11,10 +11,11 @@ namespace Source.Chess.Runtime {
         public Player CurrentPlayer { get; set; }
         public int ActionCount { get; set; }
 
-        public GameState() {
+        // TODO: Make starting board configuration a variable.
+        public GameState(string white, string black) {
             White = new Player(Color.White);
             Black = new Player(Color.Black);
-            Board = new Board();
+            Board = new Board(white, black);
             ActionCount = 0;
         }
 
