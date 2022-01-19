@@ -9,6 +9,9 @@ using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 
 namespace Source.Chess.Runtime {
+
+    #region Constants
+
     /// <summary>
     /// Encodes the possible values a square on the board can have. The `OutOfBounds` value is used to simplify
     /// checking whether a coordinate is out of bounds.
@@ -37,9 +40,14 @@ namespace Source.Chess.Runtime {
         Black,
     }
 
+    #endregion
+
     // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
     public static class Rules {
 
+        public const string StandardWhite = "a2,b2,c2,d2,e2,f2,g2,h2,Ra1,Nb1,Bc1,Qd1,Ke1,Bf1,Ng1,Rh1";
+        public const string StandardBlack = "a7,b7,c7,d7,e7,f7,g7,h7,Ra8,Nb8,Bc8,Qd8,Ke8,Bf8,Ng8,Rh8";
+        
         #region Steps
         
         /// <summary>
