@@ -47,7 +47,13 @@ namespace Source.Chess.Runtime {
 
         public const string StandardWhite = "a2,b2,c2,d2,e2,f2,g2,h2,Ra1,Nb1,Bc1,Qd1,Ke1,Bf1,Ng1,Rh1";
         public const string StandardBlack = "a7,b7,c7,d7,e7,f7,g7,h7,Ra8,Nb8,Bc8,Qd8,Ke8,Bf8,Ng8,Rh8";
+
+        public const int whitePawnRow = 3;
+        public const int whitePawnDirection = 1;
+        public const int blackPawnRow = 8;
+        public const int blackPawnDirection = -1;
         
+
         #region Steps
         
         /// <summary>
@@ -237,9 +243,9 @@ namespace Source.Chess.Runtime {
         public static int GetPawnStartRow(Color color) {
             switch (color) {
                 case Color.White:
-                    return 8;
+                    return whitePawnRow;
                 case Color.Black:
-                    return 3;
+                    return blackPawnRow;
                 default:
                     throw new Exception("Handed unassigned player while trying to determine pawn direction.");
             }
@@ -248,9 +254,9 @@ namespace Source.Chess.Runtime {
         public static int GetPawnDirection(Color color) {
             switch (color) {
                 case Color.White:
-                    return -1;
+                    return whitePawnDirection;
                 case Color.Black:
-                    return 1;
+                    return blackPawnDirection;
                 default:
                     throw new Exception("Handed unassigned player while trying to determine pawn direction.");
             }

@@ -14,8 +14,8 @@ namespace Source.Chess.Runtime.Objects {
         public Board(string white, string black) {
             Squares = new PieceType[12, 12];
             SetupSquares();
-            PlacePieces(white, true);
-            PlacePieces(black, false);
+            if (white.Length > 0) PlacePieces(white, true);
+            if (black.Length > 0) PlacePieces(black, false);
         }
 
         private void PlacePieces(string line, bool isWhite) {
@@ -26,7 +26,7 @@ namespace Source.Chess.Runtime.Objects {
                 bool notPawn = placement.Length == 3;
                 int pad = notPawn ? 1 : 0;
                 var t = ToVector2Int(placement[1 + pad], placement[pad]);
-                var pieceType = notPawn ? ToPieceType(placement[0], isWhite) : isWhite ? PieceType.WPawn : PieceType.BPawn;
+                var pieceType = notPawn ? ToPieceType(placement[0], isWhite) : (isWhite ? PieceType.WPawn : PieceType.BPawn);
                 Squares[t.x, t.y] = pieceType;
             }
         }
@@ -44,18 +44,18 @@ namespace Source.Chess.Runtime.Objects {
         }
 
         private Vector2Int ToVector2Int(char rank, char file) {
-            int x = rank - 'a' + 2;
-            int y = file - '1' + 2;
+            int x = rank - '1' + 2;
+            int y = file - 'a' + 2;
             return new Vector2Int(x, y);
         }
 
         private void SetupSquares() {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 12; i++) {
                 for (int j = 0; j < 2; j++) {
                     Squares[i, j] = PieceType.OutOfBounds;
                     Squares[j, i] = PieceType.OutOfBounds;
-                    Squares[Squares.Length-(1+j), i] = PieceType.OutOfBounds;
-                    Squares[i,Squares.Length-(1+j)] = PieceType.OutOfBounds;
+                    Squares[11 - j, i] = PieceType.OutOfBounds;
+                    Squares[i,11 - j] = PieceType.OutOfBounds;
                 }
             }
         }

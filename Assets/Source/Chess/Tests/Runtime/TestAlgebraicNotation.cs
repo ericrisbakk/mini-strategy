@@ -4,11 +4,12 @@ using NUnit.Framework;
 using Source.Chess.Runtime;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
+using Color = Source.Chess.Runtime.Color;
 
 namespace Source.Chess.Tests.Runtime {
     public class TestAlgebraicNotation {
         [Test]
-        public void VerifyPiecesOfStandardBoard() {
+        public void TestPiecesOfStandardBoard() {
             var state = new GameState(Rules.StandardWhite, Rules.StandardBlack);
             var squares = state.Squares();
             var expected = GetStandardExpected();
@@ -23,7 +24,7 @@ namespace Source.Chess.Tests.Runtime {
         }
         
         [Test]
-        public void VerifyOutOfBounds() {
+        public void TestOutOfBounds() {
             var state = new GameState(Rules.StandardWhite, Rules.StandardBlack);
             var squares = state.Squares();
             Assert.IsTrue(squares.GetLength(0) == 12);
@@ -44,7 +45,7 @@ namespace Source.Chess.Tests.Runtime {
         }
 
         [Test]
-        public void VerifyStandardEmptySquares() {
+        public void TestStandardEmptySquares() {
             var state = new GameState(Rules.StandardWhite, Rules.StandardBlack);
             var squares = state.Squares();
             for (int i = 4; i < 8; i++) {
@@ -55,27 +56,38 @@ namespace Source.Chess.Tests.Runtime {
             }
         }
 
+        [Test]
+        public void TestZeroPieces() {
+            var state = new GameState("", "");
+        }
+
         private List<Tuple<Vector2Int, PieceType>> GetStandardExpected() {
+            var whitePawnRow = Rules.GetPawnStartRow(Color.White);
+            var blackPawnRow = Rules.GetPawnStartRow(Color.Black);
+            var whiteBackRow = whitePawnRow - Rules.GetPawnDirection(Color.White);
+            var blackBackRow = blackPawnRow - Rules.GetPawnDirection(Color.Black);
+            
             var expected = new List<Tuple<Vector2Int, PieceType>>() {
-                GetTuple(9, 2, PieceType.WRook),
-                GetTuple(9, 3, PieceType.WKnight),
-                GetTuple(9, 4, PieceType.WBishop),
-                GetTuple(9, 5, PieceType.WQueen),
-                GetTuple(9, 6, PieceType.WKing),
-                GetTuple(9, 7, PieceType.WBishop),
-                GetTuple(9, 8, PieceType.WKnight),
-                GetTuple(9, 9, PieceType.WRook),
-                GetTuple(2, 2, PieceType.BRook),
-                GetTuple(2, 3, PieceType.BKnight),
-                GetTuple(2, 4, PieceType.BBishop),
-                GetTuple(2, 5, PieceType.BQueen),
-                GetTuple(2, 6, PieceType.BKing),
-                GetTuple(2, 7, PieceType.BBishop),
-                GetTuple(2, 8, PieceType.BKnight),
-                GetTuple(2, 9, PieceType.BRook),
+                GetTuple(whiteBackRow, 2, PieceType.WRook),
+                GetTuple(whiteBackRow, 3, PieceType.WKnight),
+                GetTuple(whiteBackRow, 4, PieceType.WBishop),
+                GetTuple(whiteBackRow, 5, PieceType.WQueen),
+                GetTuple(whiteBackRow, 6, PieceType.WKing),
+                GetTuple(whiteBackRow, 7, PieceType.WBishop),
+                GetTuple(whiteBackRow, 8, PieceType.WKnight),
+                GetTuple(whiteBackRow, 9, PieceType.WRook),
+                
+                GetTuple(blackBackRow, 2, PieceType.BRook),
+                GetTuple(blackBackRow, 3, PieceType.BKnight),
+                GetTuple(blackBackRow, 4, PieceType.BBishop),
+                GetTuple(blackBackRow, 5, PieceType.BQueen),
+                GetTuple(blackBackRow, 6, PieceType.BKing),
+                GetTuple(blackBackRow, 7, PieceType.BBishop),
+                GetTuple(blackBackRow, 8, PieceType.BKnight),
+                GetTuple(blackBackRow, 9, PieceType.BRook),
             };
-            expected.AddRange(GetPawns(8, true));
-            expected.AddRange(GetPawns(3, false));
+            expected.AddRange(GetPawns(whitePawnRow, true));
+            expected.AddRange(GetPawns(blackPawnRow, false));
 
             return expected;
         }
