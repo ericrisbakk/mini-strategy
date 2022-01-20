@@ -6,13 +6,14 @@ using UnityEngine;
 using static Source.Chess.Tests.Runtime.TestUtility;
 
 namespace Source.Chess.Tests.Runtime {
-    public class TestPawnActions {
+    public class PawnActionsTest {
         [Test]
         public void TestPawnStartMove() {
             var white = "b2";
             var black = "g7";
             var state = new GameState(white, black);
-
+            
+            
             var expected = new List<Tuple<Vector2Int, PieceType>>() {
                 
             };

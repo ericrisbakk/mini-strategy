@@ -8,7 +8,7 @@ using Color = Source.Chess.Runtime.Color;
 using static Source.Chess.Tests.Runtime.TestUtility;
 
 namespace Source.Chess.Tests.Runtime {
-    public class TestAlgebraicNotation {
+    public class AlgebraicNotationTest {
         int whitePawnRow = Rules.GetPawnStartRow(Color.White);
         int blackPawnRow = Rules.GetPawnStartRow(Color.Black);
         int whiteBackRow = Rules.GetPawnStartRow(Color.White) - Rules.GetPawnDirection(Color.White);

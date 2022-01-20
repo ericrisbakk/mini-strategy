@@ -7,7 +7,7 @@ using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
 
 namespace Source.TicTacToe.Tests.Runtime {
-    public class TestTicTacToeGameOver
+    public class TicTacToeGameOverTest
     {
         [Test]
         public void TestDraw() {
