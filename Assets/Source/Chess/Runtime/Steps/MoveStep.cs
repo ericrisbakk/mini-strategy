@@ -71,8 +71,30 @@ namespace Source.Chess.Runtime.Steps {
     public class PawnMoveStep : MoveStep {
         public PawnMoveStep(Move move) : base(move) {}
 
-        // TODO: There actually needs to be a check for the En Passant case, but that requires outside information.
-        // TODO: Consider a "Promise" test, that must happen immediately after.
+        public override GameState Forward(GameState state, LinearHistory history) {
+            if (UpForPromotion()) {
+                state.PromotionNeeded = true;
+                state.PromotionTarget = Move.Target;
+            }
+                
+            return base.Forward(state, history);
+        }
+
+        public override GameState Backward(GameState state, LinearHistory history) {
+            if (UpForPromotion()) {
+                state.PromotionNeeded = false;
+            }
+            
+            return base.Backward(state, history);
+        }
+
+        private bool UpForPromotion() {
+            if ((Move.Piece == PieceType.WPawn || Move.Piece == PieceType.BPawn)
+                && Move.Target.x == Rules.GetBackRow(Rules.GetOtherColor(Move.Player.Color)))
+                return true;
+            return false;
+        }
+
         public override GameState CommonValidation(GameState state, LinearHistory history) {
             var s = Move.Source;
             var t = Move.Target;

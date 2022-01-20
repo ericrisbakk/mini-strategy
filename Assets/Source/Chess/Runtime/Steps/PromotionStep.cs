@@ -14,6 +14,7 @@ namespace Source.Chess.Runtime.Steps {
         public GameState Forward(GameState state, LinearHistory history) {
             var t = Promote.Pawn;
             state.Squares()[t.x, t.y] = Promote.Promotion;
+            state.PromotionNeeded = false;
             state.ActionCount += 1;
 
             return state;
@@ -22,6 +23,7 @@ namespace Source.Chess.Runtime.Steps {
         public GameState Backward(GameState state, LinearHistory history) {
             var t = Promote.Pawn;
             state.Squares()[t.x, t.y] = Promote.Player.Color == Color.White ? PieceType.WPawn : PieceType.BPawn;
+            state.PromotionNeeded = true;
             state.ActionCount -= 1;
 
             return state;

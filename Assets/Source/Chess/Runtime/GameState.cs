@@ -10,8 +10,9 @@ namespace Source.Chess.Runtime {
         
         public Player CurrentPlayer { get; set; }
         public int ActionCount { get; set; }
-
-        // TODO: Make starting board configuration a variable.
+        public bool PromotionNeeded { get; set; }
+        public Vector2Int PromotionTarget { get; set; }
+        
         public GameState(string white, string black) {
             White = new Player(Color.White);
             Black = new Player(Color.Black);

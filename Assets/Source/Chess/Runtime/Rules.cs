@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
 using Source.Chess.Runtime.Steps;
@@ -47,9 +46,11 @@ namespace Source.Chess.Runtime {
 
         public const string StandardWhite = "a2,b2,c2,d2,e2,f2,g2,h2,Ra1,Nb1,Bc1,Qd1,Ke1,Bf1,Ng1,Rh1";
         public const string StandardBlack = "a7,b7,c7,d7,e7,f7,g7,h7,Ra8,Nb8,Bc8,Qd8,Ke8,Bf8,Ng8,Rh8";
-
+        
+        public const int whiteBackRow = 2;
         public const int whitePawnRow = 3;
         public const int whitePawnDirection = 1;
+        public const int blackBackRow = 9;
         public const int blackPawnRow = 8;
         public const int blackPawnDirection = -1;
         
@@ -132,13 +133,40 @@ namespace Source.Chess.Runtime {
 
         public static List<IAction> GetActions(GameState state, Vector2Int source) {
             var actions = new List<IAction>();
-            var moves = new List<IAction>(GetMoves(state, source));
-            actions.AddRange(moves);
+            if (state.PromotionNeeded) {
+                actions.AddRange(GetPromoteActions(state));
+            }
+            else {
+                var moves = new List<IAction>(GetMoves(state, source));
+                actions.AddRange(moves);
+            }
 
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Naive implementation for getting all actions.
+        /// TODO: Keep track of piece locations.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public static List<IAction> GetAllActions(GameState state) {
+            var actions = new List<IAction>();
+            if (state.PromotionNeeded) {
+                actions.AddRange(GetActions(state, state.PromotionTarget));
+            }
+            else {
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        var t = new Vector2Int(2 + i, 2 + j);
+                        actions.AddRange(GetActions(state, t));
+                    }
+                }
+            }
+
+            return actions;
+        }
         
-        #endregion
         
         #region Moves
 
@@ -181,6 +209,24 @@ namespace Source.Chess.Runtime {
             int y = file - 'a' + 2;
             return new Vector2Int(x, y);
         }
+        
+        #endregion
+
+        #region Promotion
+
+        public static List<Promote> GetPromoteActions(GameState state) {
+            var actions = new List<Promote>();
+            for (int i = 1; i <= 4; i++) {
+                var piece = state.CurrentPlayer.Color == Color.White
+                    ? PieceType.WPawn + i
+                    : PieceType.BPawn + i;
+                actions.Add(new Promote(state.CurrentPlayer, state.PromotionTarget, piece));
+            }
+
+            return actions;
+        }
+
+        #endregion
         
         #endregion
         
@@ -261,6 +307,17 @@ namespace Source.Chess.Runtime {
                     return whitePawnDirection;
                 case Color.Black:
                     return blackPawnDirection;
+                default:
+                    throw new Exception("Handed unassigned player while trying to determine pawn direction.");
+            }
+        }
+        
+        public static int GetBackRow(Color color) {
+            switch (color) {
+                case Color.White:
+                    return whiteBackRow;
+                case Color.Black:
+                    return blackBackRow;
                 default:
                     throw new Exception("Handed unassigned player while trying to determine pawn direction.");
             }
