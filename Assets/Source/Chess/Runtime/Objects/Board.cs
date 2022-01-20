@@ -25,7 +25,7 @@ namespace Source.Chess.Runtime.Objects {
 
                 bool notPawn = placement.Length == 3;
                 int pad = notPawn ? 1 : 0;
-                var t = ToVector2Int(placement[1 + pad], placement[pad]);
+                var t = Rules.ToVector2Int(placement[1 + pad], placement[pad]);
                 var pieceType = notPawn ? ToPieceType(placement[0], isWhite) : (isWhite ? PieceType.WPawn : PieceType.BPawn);
                 Squares[t.x, t.y] = pieceType;
             }
@@ -41,12 +41,6 @@ namespace Source.Chess.Runtime.Objects {
             }
 
             throw new Exception($"Algebraic notation \'{piece}\' was not recognized as a `PieceType`.");
-        }
-
-        private Vector2Int ToVector2Int(char rank, char file) {
-            int x = rank - '1' + 2;
-            int y = file - 'a' + 2;
-            return new Vector2Int(x, y);
         }
 
         private void SetupSquares() {

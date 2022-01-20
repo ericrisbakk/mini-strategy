@@ -5,9 +5,15 @@ using Source.Chess.Runtime;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
 using Color = Source.Chess.Runtime.Color;
+using static Source.Chess.Tests.Runtime.TestUtility;
 
 namespace Source.Chess.Tests.Runtime {
     public class TestAlgebraicNotation {
+        int whitePawnRow = Rules.GetPawnStartRow(Color.White);
+        int blackPawnRow = Rules.GetPawnStartRow(Color.Black);
+        int whiteBackRow = Rules.GetPawnStartRow(Color.White) - Rules.GetPawnDirection(Color.White);
+        int blackBackRow = Rules.GetPawnStartRow(Color.Black) - Rules.GetPawnDirection(Color.Black);
+        
         [Test]
         public void TestPiecesOfStandardBoard() {
             var state = new GameState(Rules.StandardWhite, Rules.StandardBlack);
@@ -61,12 +67,26 @@ namespace Source.Chess.Tests.Runtime {
             var state = new GameState("", "");
         }
 
+        [Test]
+        public void TestAlgebraicNotationToVector2Int() {
+
+            var comparisons = new List<Tuple<string, Vector2Int>>() {
+                new Tuple<string, Vector2Int>("a1", new Vector2Int(whiteBackRow, 2)),
+                new Tuple<string, Vector2Int>("h1", new Vector2Int(whiteBackRow, 9)),
+                new Tuple<string, Vector2Int>("a8", new Vector2Int(blackBackRow, 2)),
+                new Tuple<string, Vector2Int>("h8", new Vector2Int(blackBackRow, 9)),
+            };
+
+            foreach (var comp in comparisons) {
+                var rank = comp.Item1[1];
+                var file = comp.Item1[0];
+                var t = Rules.ToVector2Int(rank, file);
+                Assert.IsTrue(t == comp.Item2,
+                    $"Algebraic notation \"{comp.Item1}\" returned {t}, but should have been {comp.Item2}.");
+            }
+        }
+
         private List<Tuple<Vector2Int, PieceType>> GetStandardExpected() {
-            var whitePawnRow = Rules.GetPawnStartRow(Color.White);
-            var blackPawnRow = Rules.GetPawnStartRow(Color.Black);
-            var whiteBackRow = whitePawnRow - Rules.GetPawnDirection(Color.White);
-            var blackBackRow = blackPawnRow - Rules.GetPawnDirection(Color.Black);
-            
             var expected = new List<Tuple<Vector2Int, PieceType>>() {
                 GetTuple(whiteBackRow, 2, PieceType.WRook),
                 GetTuple(whiteBackRow, 3, PieceType.WKnight),
@@ -100,8 +120,5 @@ namespace Source.Chess.Tests.Runtime {
 
             return l;
         }
-        
-        private Tuple<Vector2Int, PieceType> GetTuple(int x, int y, PieceType piece)
-            => new Tuple<Vector2Int, PieceType>(new Vector2Int(x, y), piece);
     }
 }

@@ -176,7 +176,11 @@ namespace Source.Chess.Runtime {
             return moveList;
         }
         
-        
+        public static Vector2Int ToVector2Int(char rank, char file) {
+            int x = rank - '1' + 2;
+            int y = file - 'a' + 2;
+            return new Vector2Int(x, y);
+        }
         
         #endregion
         
