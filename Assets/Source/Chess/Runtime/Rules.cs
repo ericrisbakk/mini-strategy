@@ -130,18 +130,17 @@ namespace Source.Chess.Runtime {
         #endregion
 
         #region Action
-
-        public static List<IAction> GetActions(GameState state, Vector2Int source) {
+        
+        public static List<IAction> GetActions(GameState state, LinearHistory history, Vector2Int source) {
             var actions = new List<IAction>();
             if (state.PromotionNeeded) {
+                if (state.PromotionTarget != source)
+                    return actions;
                 actions.AddRange(GetPromoteActions(state));
             }
-            else {
-                var moves = new List<IAction>(GetMoves(state, source));
-                actions.AddRange(moves);
-            }
-
-            throw new NotImplementedException();
+            else 
+                actions.AddRange(GetPawnActions(state, history, source));
+            return actions;
         }
 
         /// <summary>
@@ -150,16 +149,16 @@ namespace Source.Chess.Runtime {
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public static List<IAction> GetAllActions(GameState state) {
+        public static List<IAction> GetAllActions(GameState state, LinearHistory history) {
             var actions = new List<IAction>();
             if (state.PromotionNeeded) {
-                actions.AddRange(GetActions(state, state.PromotionTarget));
+                actions.AddRange(GetActions(state, history, state.PromotionTarget));
             }
             else {
                 for (int i = 0; i < 8; i++) {
                     for (int j = 0; j < 8; j++) {
                         var t = new Vector2Int(2 + i, 2 + j);
-                        actions.AddRange(GetActions(state, t));
+                        actions.AddRange(GetActions(state, history, t));
                     }
                 }
             }
@@ -167,20 +166,13 @@ namespace Source.Chess.Runtime {
             return actions;
         }
         
-        
-        #region Moves
-
-        public static List<Move> GetMoves(GameState state, Vector2Int source) {
-            throw new NotImplementedException();
-        }
-        
-        public static List<Move> GetPawnMoves(GameState state, Vector2Int source) {
+        public static List<IAction> GetPawnActions(GameState state, LinearHistory history, Vector2Int source) {
             var piece = state.Square(source);
             var player = state.CurrentPlayer;
             var color = ColorOfPiece(piece);
             var start = GetPawnStartRow(color);
             var direction = GetPawnDirection(color);
-            var moveList = new List<Move>();
+            var moveList = new List<IAction>();
 
             var posAhead1 = new Vector2Int(source.x + direction, source.y);
             if (state.Square(posAhead1) == PieceType.Empty) {
@@ -200,19 +192,12 @@ namespace Source.Chess.Runtime {
             var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
             if (OwnsPiece(GetOtherPlayer(state, player), state.Square(rightCapture)))
                 moveList.Add(new Move(player, PieceType.WPawn, source, rightCapture));
+            
+            if (CanEnPassant(state, history, source, out var enPassantTarget))
+                moveList.Add(new EnPassant(player, source, enPassantTarget));
 
             return moveList;
         }
-        
-        public static Vector2Int ToVector2Int(char rank, char file) {
-            int x = rank - '1' + 2;
-            int y = file - 'a' + 2;
-            return new Vector2Int(x, y);
-        }
-        
-        #endregion
-
-        #region Promotion
 
         public static List<Promote> GetPromoteActions(GameState state) {
             var actions = new List<Promote>();
@@ -225,8 +210,16 @@ namespace Source.Chess.Runtime {
 
             return actions;
         }
+        
+        public static Vector2Int ToVector2Int(char rank, char file) {
+            int x = rank - '1' + 2;
+            int y = file - 'a' + 2;
+            return new Vector2Int(x, y);
+        }
 
-        #endregion
+        public static Tuple<IAction, List<IStep>> GetActionFromNow(this LinearHistory history, GameState state, int index) {
+            return history.Events[state.ActionCount - index];
+        }
         
         #endregion
         
@@ -321,6 +314,42 @@ namespace Source.Chess.Runtime {
                 default:
                     throw new Exception("Handed unassigned player while trying to determine pawn direction.");
             }
+        }
+
+        public static PieceType GetOppositePiece(PieceType piece) {
+            if ((int) piece < 2)
+                throw new Exception("There is no opposite piece for empty or out of bounds types.");
+            if ((int) piece < 8)
+                return piece + 6;
+            return piece - 6;
+        }
+
+        public static bool CanEnPassant(GameState state, LinearHistory history, Vector2Int source, out Vector2Int target) {
+            var piece = state.Squares()[source.x, source.y];
+            var start = GetPawnStartRow(ColorOfPiece(piece));
+            var direction = GetPawnDirection(ColorOfPiece(piece));
+
+            if (source.x != start + (3 * direction)) {
+                target = Vector2Int.zero;
+                return false;
+            }
+
+            var oppositePiece = GetOppositePiece(piece);
+            var action = history.GetActionFromNow(state, 1).Item1;
+            if (!(action is Move move)) {
+                target = Vector2Int.zero;
+                return false;
+            }
+            if (move.Player == state.CurrentPlayer
+                || move.Piece != oppositePiece
+                || source.x != move.Target.x
+                || Math.Abs(source.y - move.Target.y) != 1) {
+                target = Vector2Int.zero;
+                return false;
+            }
+
+            target = move.Target;
+            return true;
         }
 
         #endregion

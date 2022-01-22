@@ -74,7 +74,7 @@ namespace Source.Chess.Runtime.Steps {
             StepValidation.ActionCountValid(state, history);
             StepValidation.PlayerColorAssigned(EnPassant.Player);
             
-            var lastAction = history.Events[state.ActionCount - (isForward ? 1 : 2)];
+            var lastAction = history.GetActionFromNow(state, (isForward ? 1 : 2));
             var step = lastAction.Item2[0];
             StepValidation.StepIs(step, typeof(MoveStep));
             var move = (MoveStep) step;
