@@ -138,7 +138,7 @@ namespace Source.Chess.Runtime {
                     return actions;
                 actions.AddRange(GetPromoteActions(state));
             }
-            else 
+            else if(OwnsPiece(state.CurrentPlayer, state.Squares()[source.x, source.y]))
                 actions.AddRange(GetPawnActions(state, history, source));
             return actions;
         }
@@ -158,7 +158,9 @@ namespace Source.Chess.Runtime {
                 for (int i = 0; i < 8; i++) {
                     for (int j = 0; j < 8; j++) {
                         var t = new Vector2Int(2 + i, 2 + j);
-                        actions.AddRange(GetActions(state, history, t));
+                        if(OwnsPiece(state.CurrentPlayer, state.Squares()[t.x, t.y])) {
+                            actions.AddRange(GetActions(state, history, t));
+                        }
                     }
                 }
             }
@@ -176,22 +178,24 @@ namespace Source.Chess.Runtime {
 
             var posAhead1 = new Vector2Int(source.x + direction, source.y);
             if (state.Square(posAhead1) == PieceType.Empty) {
-                moveList.Add(new Move(player, PieceType.WPawn, source, posAhead1));
+                moveList.Add(new Move(player, PieceType.WPawn, source, PieceType.Empty, posAhead1));
 
                 var posAhead2 = new Vector2Int(source.x + (2 * direction), source.y);
                 if (source.x == start
                     && state.Square(posAhead2) == PieceType.Empty) {
-                    moveList.Add(new Move(player, PieceType.WPawn, source, posAhead2));
+                    moveList.Add(new Move(player, PieceType.WPawn, source, PieceType.Empty, posAhead2));
                 }
             }
 
             var leftCapture = new Vector2Int(source.x + direction, source.y + 1);
+            var leftCapturedPiece = state.Square(leftCapture);
             if (OwnsPiece(GetOtherPlayer(state, player), state.Square(leftCapture)))
-                moveList.Add(new Move(player, PieceType.WPawn, source, leftCapture));
+                moveList.Add(new Move(player, PieceType.WPawn, source, leftCapturedPiece, leftCapture));
             
             var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
+            var rightCapturedPiece = state.Square(leftCapture);
             if (OwnsPiece(GetOtherPlayer(state, player), state.Square(rightCapture)))
-                moveList.Add(new Move(player, PieceType.WPawn, source, rightCapture));
+                moveList.Add(new Move(player, PieceType.WPawn, source, rightCapturedPiece, rightCapture));
             
             if (CanEnPassant(state, history, source, out var enPassantTarget))
                 moveList.Add(new EnPassant(player, source, enPassantTarget));
