@@ -1,14 +1,15 @@
+using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Steps {
-    public class ChangePlayerStep : IStep<GameState> {
+    public class ChangePlayerStep : IStep<GameState, LinearHistory> {
 
-        public GameState Forward(GameState state) {
+        public GameState Forward(GameState state, LinearHistory history) {
             return FlipCurrentPlayer(state);
         }
         
-        public GameState Backward(GameState state) {
+        public GameState Backward(GameState state, LinearHistory history) {
             return FlipCurrentPlayer(state);
         }
 
@@ -17,11 +18,11 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
 
-        public GameState ValidateForward(GameState state) {
+        public GameState ValidateForward(GameState state, LinearHistory history) {
             return CommonValidation(state);
         }
 
-        public GameState ValidateBackward(GameState state) {
+        public GameState ValidateBackward(GameState state, LinearHistory history) {
             return CommonValidation(state);
         }
 

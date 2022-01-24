@@ -1,16 +1,32 @@
+using System;
 using System.Linq;
 using Source.Chess.Runtime.Objects;
+using Source.StrategyFramework.Runtime.History;
+using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Steps {
     public static class StepValidation {
+
+        public static readonly PieceType[] Pawns = {PieceType.WPawn, PieceType.BPawn};
+        
+        public static void ActionCountValid(GameState state, LinearHistory history) {
+            Assert.IsTrue(0 <= state.ActionCount && state.ActionCount < history.Events.Count,
+                "0 <= state.ActionCount && state.ActionCount < history.Events.Count");
+        }
+        
         /// <summary>
         /// Asserts that `player.Color` is not value `Color.Unassigned`.
         /// </summary>
         public static void PlayerColorAssigned(Player player) {
             Assert.AreNotEqual(player.Color, Color.Unassigned, 
                 "Player must have a color.");
+        }
+
+        public static void PlayerIsColor(Player player, Color color) {
+            Assert.IsTrue(player.Color == color,
+                $"Player color was not value {color}.");
         }
 
         /// <summary>
@@ -47,6 +63,26 @@ namespace Source.Chess.Runtime.Steps {
         public static void PositionIsPiece(PieceType[,] squares, Vector2Int pos, PieceType[] pieces) {
             Assert.IsTrue( pieces.Contains(squares[pos.x, pos.y]),
                 $"Position ({pos.x}, {pos.y}) is supposed to be of value in {pieces}.");
+        }
+
+        public static void PositionIsNotPiece(PieceType[,] squares, Vector2Int pos, PieceType[] pieces) {
+            Assert.IsFalse( pieces.Contains(squares[pos.x, pos.y]),
+                $"Position ({pos.x}, {pos.y}) is *not* supposed to be a value of {pieces}.");
+        }
+
+        public static void PieceIs(PieceType p1, PieceType p2) {
+            Assert.IsTrue(p1 == p2, 
+                $"Piece {p1} must be of type {p2}");
+        }
+        
+        public static void PieceIs(PieceType piece, PieceType[] pieces) {
+            Assert.IsTrue(pieces.Contains(piece), 
+                $"{piece} was not found among candidates in {pieces}");
+        }
+
+        public static void StepIs(IStep step, Type type) {
+            Assert.IsTrue(step.GetType() == type,
+                $"Given step should be of type {type}.");
         }
     }
 }

@@ -1,16 +1,18 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Source.StrategyFramework.Runtime.History;
 using Source.TicTacToe.Runtime;
 using Source.TicTacToe.Runtime.Actions;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
 
 namespace Source.TicTacToe.Tests.Runtime {
-    public class TestTicTacToeGameOver
+    public class TicTacToeGameOverTest
     {
         [Test]
         public void TestDraw() {
             var state = new GameState();
+            var history = new LinearHistory();
             var positions = new List<Vector2Int> {
                 new Vector2Int(1, 1),
                 new Vector2Int(0, 0),
@@ -25,7 +27,7 @@ namespace Source.TicTacToe.Tests.Runtime {
             var lastMove = positions[positions.Count - 1];
             
             foreach (var pos in positions) {
-                Rules.Apply(state, new Draw(pos, state.GetCurrentPlayer), out var step);
+                Rules.Apply(state, history, new Draw(pos, state.GetCurrentPlayer), out var step);
                 if (state.MoveCounter < 9) {
                     Assert.IsTrue(Rules.IsGameOver(state, pos) == GameResult.Undecided);
                 }

@@ -10,10 +10,12 @@ namespace Source.StrategyFramework.Runtime.Representation {
     ///
     /// A forward step can create other steps
     /// </summary>
-    public interface IStep<T> : IStep {
-        public T Forward(T state);
-        public T Backward(T state);
-        public T ValidateForward(T state);
-        public T ValidateBackward(T state);
+    public interface IStep<TState, THistory> : IStep
+    where TState : IState
+    where THistory : IHistory {
+        public TState Forward(TState state, THistory history);
+        public TState Backward(TState state, THistory history);
+        public TState ValidateForward(TState state, THistory history);
+        public TState ValidateBackward(TState state, THistory history);
     }
 }

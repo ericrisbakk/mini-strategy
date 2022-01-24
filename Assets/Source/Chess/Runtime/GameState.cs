@@ -9,11 +9,15 @@ namespace Source.Chess.Runtime {
         public Board Board { get; }
         
         public Player CurrentPlayer { get; set; }
-
-        public GameState() {
+        public int ActionCount { get; set; }
+        public bool PromotionNeeded { get; set; }
+        public Vector2Int PromotionTarget { get; set; }
+        
+        public GameState(string white, string black) {
             White = new Player(Color.White);
             Black = new Player(Color.Black);
-            Board = new Board();
+            Board = new Board(white, black);
+            ActionCount = 0;
         }
 
         public PieceType[,] Squares() => Board.Squares;

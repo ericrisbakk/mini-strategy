@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
 using Source.Chess.Runtime.Steps;
@@ -9,6 +8,9 @@ using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 
 namespace Source.Chess.Runtime {
+
+    #region Constants
+
     /// <summary>
     /// Encodes the possible values a square on the board can have. The `OutOfBounds` value is used to simplify
     /// checking whether a coordinate is out of bounds.
@@ -37,8 +39,21 @@ namespace Source.Chess.Runtime {
         Black,
     }
 
+    #endregion
+
     // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
     public static class Rules {
+
+        public const string StandardWhite = "a2,b2,c2,d2,e2,f2,g2,h2,Ra1,Nb1,Bc1,Qd1,Ke1,Bf1,Ng1,Rh1";
+        public const string StandardBlack = "a7,b7,c7,d7,e7,f7,g7,h7,Ra8,Nb8,Bc8,Qd8,Ke8,Bf8,Ng8,Rh8";
+        
+        public const int whiteBackRow = 2;
+        public const int whitePawnRow = 3;
+        public const int whitePawnDirection = 1;
+        public const int blackBackRow = 9;
+        public const int blackPawnRow = 8;
+        public const int blackPawnDirection = -1;
+        
 
         #region Steps
         
@@ -52,20 +67,20 @@ namespace Source.Chess.Runtime {
         /// <returns></returns>
         public static GameState Apply(GameState state, LinearHistory history, IAction action, bool validate) {
             var stepList = new List<IStep>();
-            HandleStep(state, stepList, GetNextStep(state, history, action), validate);
+            HandleStep(state, history, stepList, GetNextStep(state, history, action), validate);
             
             while (HasNextStep(state, history, stepList, out var step)) {
-                HandleStep(state, stepList, step, validate);
+                HandleStep(state, history, stepList, step, validate);
             }
             
             history.Add(action, stepList);
             return state;
         }
 
-        private static void HandleStep(GameState state, List<IStep> stepList, IStep<GameState> step, 
+        private static void HandleStep(GameState state, LinearHistory history, List<IStep> stepList, IStep<GameState, LinearHistory> step, 
             bool validate) {
-            if (validate) step.ValidateForward(state);
-            step.Forward(state);
+            if (validate) step.ValidateForward(state, history);
+            step.Forward(state, history);
             stepList.Add(step);
         }
 
@@ -78,7 +93,7 @@ namespace Source.Chess.Runtime {
         /// <param name="action"></param>
         /// <returns>Step corresponding to action.</returns>
         /// <exception cref="Exception"></exception>
-        public static IStep<GameState> GetNextStep(GameState state, LinearHistory history, IAction action) {
+        public static IStep<GameState, LinearHistory> GetNextStep(GameState state, LinearHistory history, IAction action) {
             if (action is Move move)
                 return new PawnMoveStep(move);
 
@@ -95,7 +110,7 @@ namespace Source.Chess.Runtime {
         /// <returns>True if there is a next step, false otherwise.</returns>
         /// <exception cref="NotImplementedException"></exception>
         public static bool HasNextStep(GameState state, LinearHistory history, List<IStep> stepList,
-            out IStep<GameState> step) {
+            out IStep<GameState, LinearHistory> step) {
             var lastStep = history.LastStep;
             
             if (lastStep is ChangePlayerStep) {
@@ -115,30 +130,49 @@ namespace Source.Chess.Runtime {
         #endregion
 
         #region Action
-
-        public static List<IAction> GetActions(GameState state, Vector2Int source) {
+        
+        public static List<IAction> GetActions(GameState state, LinearHistory history, Vector2Int source) {
             var actions = new List<IAction>();
-            var moves = new List<IAction>(GetMoves(state, source));
-            actions.AddRange(moves);
+            if (state.PromotionNeeded) {
+                if (state.PromotionTarget != source)
+                    return actions;
+                actions.AddRange(GetPromoteActions(state));
+            }
+            else 
+                actions.AddRange(GetPawnActions(state, history, source));
+            return actions;
+        }
 
-            throw new NotImplementedException();
+        /// <summary>
+        /// Naive implementation for getting all actions.
+        /// TODO: Keep track of piece locations.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public static List<IAction> GetAllActions(GameState state, LinearHistory history) {
+            var actions = new List<IAction>();
+            if (state.PromotionNeeded) {
+                actions.AddRange(GetActions(state, history, state.PromotionTarget));
+            }
+            else {
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        var t = new Vector2Int(2 + i, 2 + j);
+                        actions.AddRange(GetActions(state, history, t));
+                    }
+                }
+            }
+
+            return actions;
         }
         
-        #endregion
-        
-        #region Moves
-
-        public static List<Move> GetMoves(GameState state, Vector2Int source) {
-            throw new NotImplementedException();
-        }
-        
-        public static List<Move> GetPawnMoves(GameState state, Vector2Int source) {
+        public static List<IAction> GetPawnActions(GameState state, LinearHistory history, Vector2Int source) {
             var piece = state.Square(source);
             var player = state.CurrentPlayer;
             var color = ColorOfPiece(piece);
             var start = GetPawnStartRow(color);
             var direction = GetPawnDirection(color);
-            var moveList = new List<Move>();
+            var moveList = new List<IAction>();
 
             var posAhead1 = new Vector2Int(source.x + direction, source.y);
             if (state.Square(posAhead1) == PieceType.Empty) {
@@ -158,11 +192,34 @@ namespace Source.Chess.Runtime {
             var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
             if (OwnsPiece(GetOtherPlayer(state, player), state.Square(rightCapture)))
                 moveList.Add(new Move(player, PieceType.WPawn, source, rightCapture));
+            
+            if (CanEnPassant(state, history, source, out var enPassantTarget))
+                moveList.Add(new EnPassant(player, source, enPassantTarget));
 
             return moveList;
         }
+
+        public static List<Promote> GetPromoteActions(GameState state) {
+            var actions = new List<Promote>();
+            for (int i = 1; i <= 4; i++) {
+                var piece = state.CurrentPlayer.Color == Color.White
+                    ? PieceType.WPawn + i
+                    : PieceType.BPawn + i;
+                actions.Add(new Promote(state.CurrentPlayer, state.PromotionTarget, piece));
+            }
+
+            return actions;
+        }
         
-        
+        public static Vector2Int ToVector2Int(char rank, char file) {
+            int x = rank - '1' + 2;
+            int y = file - 'a' + 2;
+            return new Vector2Int(x, y);
+        }
+
+        public static Tuple<IAction, List<IStep>> GetActionFromNow(this LinearHistory history, GameState state, int index) {
+            return history.Events[state.ActionCount - index];
+        }
         
         #endregion
         
@@ -229,9 +286,9 @@ namespace Source.Chess.Runtime {
         public static int GetPawnStartRow(Color color) {
             switch (color) {
                 case Color.White:
-                    return 8;
+                    return whitePawnRow;
                 case Color.Black:
-                    return 3;
+                    return blackPawnRow;
                 default:
                     throw new Exception("Handed unassigned player while trying to determine pawn direction.");
             }
@@ -240,12 +297,59 @@ namespace Source.Chess.Runtime {
         public static int GetPawnDirection(Color color) {
             switch (color) {
                 case Color.White:
-                    return -1;
+                    return whitePawnDirection;
                 case Color.Black:
-                    return 1;
+                    return blackPawnDirection;
                 default:
                     throw new Exception("Handed unassigned player while trying to determine pawn direction.");
             }
+        }
+        
+        public static int GetBackRow(Color color) {
+            switch (color) {
+                case Color.White:
+                    return whiteBackRow;
+                case Color.Black:
+                    return blackBackRow;
+                default:
+                    throw new Exception("Handed unassigned player while trying to determine pawn direction.");
+            }
+        }
+
+        public static PieceType GetOppositePiece(PieceType piece) {
+            if ((int) piece < 2)
+                throw new Exception("There is no opposite piece for empty or out of bounds types.");
+            if ((int) piece < 8)
+                return piece + 6;
+            return piece - 6;
+        }
+
+        public static bool CanEnPassant(GameState state, LinearHistory history, Vector2Int source, out Vector2Int target) {
+            var piece = state.Squares()[source.x, source.y];
+            var start = GetPawnStartRow(ColorOfPiece(piece));
+            var direction = GetPawnDirection(ColorOfPiece(piece));
+
+            if (source.x != start + (3 * direction)) {
+                target = Vector2Int.zero;
+                return false;
+            }
+
+            var oppositePiece = GetOppositePiece(piece);
+            var action = history.GetActionFromNow(state, 1).Item1;
+            if (!(action is Move move)) {
+                target = Vector2Int.zero;
+                return false;
+            }
+            if (move.Player == state.CurrentPlayer
+                || move.Piece != oppositePiece
+                || source.x != move.Target.x
+                || Math.Abs(source.y - move.Target.y) != 1) {
+                target = Vector2Int.zero;
+                return false;
+            }
+
+            target = move.Target;
+            return true;
         }
 
         #endregion
