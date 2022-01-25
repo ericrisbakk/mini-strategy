@@ -6,6 +6,7 @@ using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
+using UnityEngine;
 using static Source.Chess.Runtime.Rules;
 using static Source.Chess.Tests.Runtime.TestUtility;
 
@@ -14,6 +15,9 @@ namespace Source.Chess.Tests.Runtime {
         private Move Add(Player player, PieceType piece, string source, PieceType capture, string target)
             => new Move(player, piece, ToVector2Int(source[1], source[0]), capture, ToVector2Int(target[1], target[0]));
 
+        private Promote Add(Player player, string target, PieceType promotion) 
+            => new Promote(player, ToVector2Int(target[1], target[0]), promotion);
+        
         [Test]
         public void TestPawnStartMoveGeneration() {
             var white = "b2";
@@ -124,6 +128,41 @@ namespace Source.Chess.Tests.Runtime {
             CompareActions(state, history, blackTests);
             CompareAllActions(state, history, blackTests);
             
+        }
+
+        [Test]
+        public void TestPawnPromotion() {
+            var white = "c8";
+            var black = "d1";
+            var state = new GameState(white, black);
+            var history = new LinearHistory();
+            state.PromotionNeeded = true;
+
+            state.CurrentPlayer = state.White;
+            state.PromotionTarget = ToVector2Int('8', 'c');
+            var whiteTests = new List<Tuple<string, List<IAction>>>() {
+                new Tuple<string, List<IAction>>("c8", new List<IAction>() {
+                    Add(state.CurrentPlayer, "c8", PieceType.WRook),
+                    Add(state.CurrentPlayer, "c8", PieceType.WKnight),
+                    Add(state.CurrentPlayer, "c8", PieceType.WBishop),
+                    Add(state.CurrentPlayer, "c8", PieceType.WQueen),
+                })
+            };
+            CompareActions(state, history, whiteTests);
+            CompareAllActions(state, history, whiteTests);
+            
+            state.CurrentPlayer = state.Black;
+            state.PromotionTarget = ToVector2Int('1', 'd');
+            var blackTests = new List<Tuple<string, List<IAction>>>() {
+                new Tuple<string, List<IAction>>("d1", new List<IAction>() {
+                    Add(state.CurrentPlayer, "d1", PieceType.BRook),
+                    Add(state.CurrentPlayer, "d1", PieceType.BKnight),
+                    Add(state.CurrentPlayer, "d1", PieceType.BBishop),
+                    Add(state.CurrentPlayer, "d1", PieceType.BQueen),
+                })
+            };
+            CompareActions(state, history, blackTests);
+            CompareAllActions(state, history, blackTests);
         }
     }
 }
