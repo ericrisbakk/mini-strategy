@@ -45,8 +45,64 @@ namespace Source.Chess.Tests.Runtime {
             var black = "b3,c5,d4";
             var state = new GameState(white, black);
             var history = new LinearHistory();
+            var empty = new List<IAction>() { };
+
+            state.CurrentPlayer = state.White;
+            var whiteTests = new List<Tuple<string, List<IAction>>>() {
+                new Tuple<string, List<IAction>>("b2", empty),
+                new Tuple<string, List<IAction>>("c4", empty),
+                new Tuple<string, List<IAction>>("d2", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.WPawn, "d2", PieceType.Empty, "d3"),
+                }),
+                new Tuple<string, List<IAction>>("f2", empty),
+                new Tuple<string, List<IAction>>("f3", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.WPawn, "f3", PieceType.Empty, "f4"),
+                }),
+                new Tuple<string, List<IAction>>("g2", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.WPawn, "g2", PieceType.Empty, "g3"),
+                }),
+                new Tuple<string, List<IAction>>("g4", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.WPawn, "g4", PieceType.Empty, "g5"),
+                })
+            };
+
+            CompareActions(state, history, whiteTests);
+            CompareAllActions(state, history, whiteTests);
+
+            state.CurrentPlayer = state.Black;
+            var blackTests = new List<Tuple<string, List<IAction>>>() {
+                new Tuple<string, List<IAction>>("b3", empty),
+                new Tuple<string, List<IAction>>("c5", empty),
+                new Tuple<string, List<IAction>>("d4", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.WPawn, "d4", PieceType.Empty, "d3"),
+                })
+            };
+            
+            CompareActions(state, history, blackTests);
+            CompareAllActions(state, history, blackTests);
         }
 
+        private void CompareActions(GameState state, LinearHistory history, List<Tuple<string, List<IAction>>> tests) {
+            foreach (var t in tests) {
+                var rank = t.Item1[1];
+                var file = t.Item1[0];
+                var actions = GetActions(state, history, ToVector2Int(rank, file));
+                AssertActionsEqualAndUnique(actions, t.Item2);
+            }
+        }
+
+        private void CompareAllActions(GameState state, LinearHistory history,
+            List<Tuple<string, List<IAction>>> tests) {
+            var expected = new List<IAction>();
+            foreach (var tuple in tests) {
+                expected.AddRange(tuple.Item2);
+            }
+
+            var allActions = GetAllActions(state, history);
+            AssertActionsEqualAndUnique(allActions, expected);
+        }
+
+        
         private void AssertActionsEqualAndUnique(List<IAction> actions, List<IAction> expected) {
             Assert.IsTrue(actions.Count == expected.Count,
                 "Number of actions generated does not match number of expected actions.");
