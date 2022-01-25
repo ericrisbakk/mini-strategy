@@ -34,8 +34,8 @@ namespace Source.Chess.Tests.Runtime {
             state.CurrentPlayer = state.Black;
             var blackTests = new List<Tuple<string, List<IAction>>>() {
                 new Tuple<string, List<IAction>>("g7", new List<IAction>() {
-                    Add(state.CurrentPlayer, PieceType.WPawn, "g7", PieceType.Empty, "g6"),
-                    Add(state.CurrentPlayer, PieceType.WPawn, "g7",PieceType.Empty,"g5")
+                    Add(state.CurrentPlayer, PieceType.BPawn, "g7", PieceType.Empty, "g6"),
+                    Add(state.CurrentPlayer, PieceType.BPawn, "g7",PieceType.Empty,"g5")
                 })
             };
             CompareActions(state, history, blackTests);
@@ -68,7 +68,6 @@ namespace Source.Chess.Tests.Runtime {
                     Add(state.CurrentPlayer, PieceType.WPawn, "g4", PieceType.Empty, "g5"),
                 })
             };
-
             CompareActions(state, history, whiteTests);
             CompareAllActions(state, history, whiteTests);
 
@@ -77,12 +76,54 @@ namespace Source.Chess.Tests.Runtime {
                 new Tuple<string, List<IAction>>("b3", empty),
                 new Tuple<string, List<IAction>>("c5", empty),
                 new Tuple<string, List<IAction>>("d4", new List<IAction>() {
-                    Add(state.CurrentPlayer, PieceType.WPawn, "d4", PieceType.Empty, "d3"),
+                    Add(state.CurrentPlayer, PieceType.BPawn, "d4", PieceType.Empty, "d3"),
                 })
             };
-            
             CompareActions(state, history, blackTests);
             CompareAllActions(state, history, blackTests);
+        }
+
+        [Test]
+        public void TestPawnAttack() {
+            var white = "b3,c3,d3";
+            var black = "a4,b4,c4";
+            var state = new GameState(white, black);
+            var history = new LinearHistory();
+
+            state.CurrentPlayer = state.White;
+            var whiteTests = new List<Tuple<string, List<IAction>>>() {
+                new Tuple<string, List<IAction>>("b3", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.WPawn, "b3", PieceType.BPawn, "a4"),
+                    Add(state.CurrentPlayer, PieceType.WPawn, "b3", PieceType.BPawn, "c4"),
+                }),
+                new Tuple<string, List<IAction>>("c3", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.WPawn, "c3", PieceType.BPawn, "b4"),
+                }),
+                new Tuple<string, List<IAction>>("d3", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.WPawn, "d3", PieceType.BPawn, "c4"),
+                    Add(state.CurrentPlayer, PieceType.WPawn, "d3", PieceType.Empty, "d4"),
+                }),
+            };
+            CompareActions(state, history, whiteTests);
+            CompareAllActions(state, history, whiteTests);
+            
+            state.CurrentPlayer = state.Black;
+            var blackTests = new List<Tuple<string, List<IAction>>>() {
+                new Tuple<string, List<IAction>>("a4", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.BPawn, "a4", PieceType.Empty, "a3"),
+                    Add(state.CurrentPlayer, PieceType.BPawn, "a4", PieceType.WPawn, "b3"),
+                }),
+                new Tuple<string, List<IAction>>("b4", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.BPawn, "b4", PieceType.WPawn, "c3"),
+                }),
+                new Tuple<string, List<IAction>>("c4", new List<IAction>() {
+                    Add(state.CurrentPlayer, PieceType.BPawn, "c4", PieceType.WPawn, "b3"),
+                    Add(state.CurrentPlayer, PieceType.BPawn, "c4", PieceType.WPawn, "d3"),
+                }),
+            };
+            CompareActions(state, history, blackTests);
+            CompareAllActions(state, history, blackTests);
+            
         }
     }
 }

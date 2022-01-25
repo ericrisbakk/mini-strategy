@@ -177,33 +177,39 @@ namespace Source.Chess.Runtime {
             var color = ColorOfPiece(piece);
             var start = GetPawnStartRow(color);
             var direction = GetPawnDirection(color);
-            var moveList = new List<IAction>();
+            var actions = new List<IAction>();
 
             var posAhead1 = new Vector2Int(source.x + direction, source.y);
             if (state.Square(posAhead1) == PieceType.Empty) {
-                moveList.Add(new Move(player, PieceType.WPawn, source, PieceType.Empty, posAhead1));
+                actions.Add(new Move(player, piece, source, PieceType.Empty, posAhead1));
 
                 var posAhead2 = new Vector2Int(source.x + (2 * direction), source.y);
                 if (source.x == start
                     && state.Square(posAhead2) == PieceType.Empty) {
-                    moveList.Add(new Move(player, PieceType.WPawn, source, PieceType.Empty, posAhead2));
+                    actions.Add(new Move(player, piece, source, PieceType.Empty, posAhead2));
                 }
             }
 
-            var leftCapture = new Vector2Int(source.x + direction, source.y + 1);
-            var leftCapturedPiece = state.Square(leftCapture);
-            if (OwnsPiece(GetOtherPlayer(state, player), state.Square(leftCapture)))
-                moveList.Add(new Move(player, PieceType.WPawn, source, leftCapturedPiece, leftCapture));
-            
-            var rightCapture = new Vector2Int(source.x + direction, source.y - 1);
-            var rightCapturedPiece = state.Square(leftCapture);
-            if (OwnsPiece(GetOtherPlayer(state, player), state.Square(rightCapture)))
-                moveList.Add(new Move(player, PieceType.WPawn, source, rightCapturedPiece, rightCapture));
-            
-            if (CanEnPassant(state, history, source, out var enPassantTarget))
-                moveList.Add(new EnPassant(player, source, enPassantTarget));
+            PawnCapture(state, actions, player, piece, source, 
+                new Vector2Int(source.x + direction, source.y + 1));
 
-            return moveList;
+            PawnCapture(state, actions, player, piece, source, 
+                new Vector2Int(source.x + direction, source.y - 1));
+
+            if (CanEnPassant(state, history, source, out var enPassantTarget))
+                actions.Add(new EnPassant(player, source, enPassantTarget));
+
+            return actions;
+        }
+
+        /// <summary>
+        /// Adds
+        /// </summary>
+        private static void PawnCapture(GameState state, List<IAction> actions, Player player, PieceType piece, 
+            Vector2Int source, Vector2Int target) {
+            var leftCapturedPiece = state.Square(target);
+            if (OwnsPiece(GetOtherPlayer(state, player), state.Square(target)))
+                actions.Add(new Move(player, piece, source, leftCapturedPiece, target));
         }
 
         public static List<Promote> GetPromoteActions(GameState state) {
