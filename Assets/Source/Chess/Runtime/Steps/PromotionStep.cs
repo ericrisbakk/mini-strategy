@@ -40,6 +40,7 @@ namespace Source.Chess.Runtime.Steps {
         public GameState ValidateBackward(GameState state, LinearHistory history) {
             CommonValidation(state, history);
             StepValidation.PositionIsNotPiece(state.Squares(), Promote.Pawn, StepValidation.Pawns);
+            StepValidation.PositionIsNotPiece(state.Squares(), Promote.Pawn, StepValidation.Kings);
             var lastAction = history.Events[state.ActionCount - 2];
             var step = lastAction.Item2[0];
             StepValidation.StepIs(step, typeof(MoveStep));
@@ -55,10 +56,11 @@ namespace Source.Chess.Runtime.Steps {
             var t = Promote.Pawn;
             var color = Promote.Player.Color;
             var otherColor = Rules.GetOtherColor(color);
-            Assert.IsTrue(t.x == Rules.GetPawnStartRow(otherColor) + Rules.GetPawnDirection(color),
+            Assert.IsTrue(t.x == Rules.GetBackRow(otherColor),
                 "A pawn can only be promoted when it has reached the furthest opposite row.");
             StepValidation.OwnsPiece(Promote. Player, state.Squares()[t.x, t.y]);
-
+            StepValidation.PieceIsNot(Promote.Promotion, StepValidation.Pawns);
+            StepValidation.PieceIsNot(Promote.Promotion, StepValidation.Kings);
             return state;
         }
     }

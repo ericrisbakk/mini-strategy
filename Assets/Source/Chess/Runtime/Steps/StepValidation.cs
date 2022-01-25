@@ -10,6 +10,7 @@ namespace Source.Chess.Runtime.Steps {
     public static class StepValidation {
 
         public static readonly PieceType[] Pawns = {PieceType.WPawn, PieceType.BPawn};
+        public static readonly PieceType[] Kings = {PieceType.WKing, PieceType.BKing};
         
         public static void ActionCountValid(GameState state, LinearHistory history) {
             Assert.IsTrue(0 <= state.ActionCount && state.ActionCount < history.Events.Count,
@@ -78,6 +79,11 @@ namespace Source.Chess.Runtime.Steps {
         public static void PieceIs(PieceType piece, PieceType[] pieces) {
             Assert.IsTrue(pieces.Contains(piece), 
                 $"{piece} was not found among candidates in {pieces}");
+        }
+
+        public static void PieceIsNot(PieceType piece, PieceType[] pieces) {
+            Assert.IsTrue(!pieces.Contains(piece),
+                $"{piece} was found among candidates in {pieces}");
         }
 
         public static void StepIs(IStep step, Type type) {
