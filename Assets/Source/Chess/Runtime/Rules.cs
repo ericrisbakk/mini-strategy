@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Source.Chess.Runtime.Actions;
 using Source.Chess.Runtime.Objects;
 using Source.Chess.Runtime.Steps;
@@ -97,10 +98,12 @@ namespace Source.Chess.Runtime {
         /// <returns>Step corresponding to action.</returns>
         /// <exception cref="Exception"></exception>
         public static IStep<GameState, LinearHistory> GetNextStep(GameState state, LinearHistory history, IAction action) {
-            if (action is Move move)
-                return new PawnMoveStep(move);
-
-            throw new Exception("Could not get next step, action was not recognized.");
+            return action switch {
+                Move move => new PawnMoveStep(move),
+                Promote promote => new PromotionStep(promote),
+                EnPassant enPassant => new EnPassantStep(enPassant),
+                _ => throw new Exception("Could not get next step, action was not recognized.")
+            };
         }
 
         /// <summary>
@@ -114,7 +117,7 @@ namespace Source.Chess.Runtime {
         /// <exception cref="NotImplementedException"></exception>
         public static bool HasNextStep(GameState state, LinearHistory history, List<IStep> stepList,
             out IStep<GameState, LinearHistory> step) {
-            var lastStep = history.LastStep;
+            var lastStep = stepList.Last();
             
             if (lastStep is ChangePlayerStep) {
                 step = null;
@@ -366,7 +369,7 @@ namespace Source.Chess.Runtime {
                 return false;
             }
 
-            target = move.Target;
+            target = new Vector2Int(move.Target.x + direction, move.Target.y);
             return true;
         }
 

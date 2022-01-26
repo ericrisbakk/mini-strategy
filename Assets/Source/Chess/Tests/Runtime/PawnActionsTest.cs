@@ -17,7 +17,10 @@ namespace Source.Chess.Tests.Runtime {
 
         private Promote Add(Player player, string target, PieceType promotion) 
             => new Promote(player, ToVector2Int(target[1], target[0]), promotion);
-        
+
+        private EnPassant Add(Player player, string source, string target)
+            => new EnPassant(player, ToVector2Int(source[1], source[0]), ToVector2Int(target[1], target[0]));
+
         [Test]
         public void TestPawnStartMoveGeneration() {
             var white = "b2";
@@ -163,6 +166,43 @@ namespace Source.Chess.Tests.Runtime {
             };
             CompareActions(state, history, blackTests);
             CompareAllActions(state, history, blackTests);
+        }
+
+        [Test]
+        public void TestPawnEnPassant() {
+            SingleEnPassantTest("f5", "g7", false, "g5", "f6", "g6");
+            SingleEnPassantTest("f5", "e7", false, "e5", "f6", "e6");
+            SingleEnPassantTest("a2", "b4", true, "a4", "b3", "a3");
+            SingleEnPassantTest("c2", "b4", true, "c4", "b3", "c3");
+        }
+
+        private void SingleEnPassantTest(string white, string black, bool whiteStarts, 
+            string firstMove, string secondMove, string enPassant) {
+            var state = new GameState(white, black);
+            var history = new LinearHistory();
+
+            var firstPlayer = whiteStarts ? state.White : state.Black;
+            var secondPlayer = GetOtherPlayer(state, firstPlayer);
+            state.CurrentPlayer = firstPlayer;
+            
+            var firstPiece = whiteStarts ? PieceType.WPawn : PieceType.BPawn;
+            var secondPiece = GetOppositePiece(firstPiece);
+            var s1 = whiteStarts ? white : black;
+            var s2 = whiteStarts ? black : white;
+            
+            var move = new Move(firstPlayer, firstPiece, ToVector2Int(s1[1], s1[0]), PieceType.Empty,
+                ToVector2Int(firstMove[1], firstMove[0]));
+            Apply(state, history, move, true);
+
+            var expected = new List<Tuple<string, List<IAction>>>() {
+                new Tuple<string, List<IAction>>(s2, new List<IAction>() {
+                    Add(secondPlayer, secondPiece, s2, PieceType.Empty, secondMove),
+                    Add(secondPlayer, s2, enPassant)
+                })
+            };
+            
+            CompareActions(state, history, expected);
+            CompareAllActions(state, history, expected);
         }
     }
 }
