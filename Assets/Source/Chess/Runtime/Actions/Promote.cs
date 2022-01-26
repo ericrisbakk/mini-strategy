@@ -13,5 +13,11 @@ namespace Source.Chess.Runtime.Actions {
             Pawn = pawn;
             Promotion = promotion;
         }
+
+        public bool Equals(Promote other) {
+            return Equals(Player, other.Player)
+                   && Pawn == other.Pawn
+                   && Promotion == other.Promotion;
+        }
     }
 }

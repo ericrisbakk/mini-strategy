@@ -14,11 +14,21 @@ namespace Source.Chess.Runtime.Actions {
         public PieceType Piece;
         public PieceType Capture;
 
-        public Move(Player player, PieceType piece, Vector2Int source, Vector2Int target) {
+        public Move(Player player, PieceType piece, Vector2Int source, PieceType capture, Vector2Int target) {
             Player = player;
             Piece = piece;
             Source = source;
+            Capture = capture;
             Target = target;
+        }
+
+        public bool Equals(Move other) {
+            return Equals(
+                Player, other.Player) 
+                   && Piece == other.Piece 
+                   && Capture == other.Capture 
+                   && Source.Equals(other.Source) 
+                   && Target.Equals(other.Target);
         }
     }
 }

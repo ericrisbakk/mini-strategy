@@ -13,5 +13,11 @@ namespace Source.Chess.Runtime.Actions {
             King = king;
             Rook = rook;
         }
+
+        public bool Equals(Castle other) {
+            return Equals(Player, other.Player)
+                   && King == other.King
+                   && Rook == other.Rook;
+        }
     }
 }

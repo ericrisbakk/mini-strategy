@@ -2,7 +2,8 @@
     "name": "Chess.Tests.Runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:fcc787cbc79327a4aa6cc9623544053d"
+        "GUID:fcc787cbc79327a4aa6cc9623544053d",
+        "GUID:8ca21f54da210be40ac5671556158ae2"
     ],
     "includePlatforms": [
         "Editor"

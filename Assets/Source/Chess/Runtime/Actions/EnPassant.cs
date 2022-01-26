@@ -15,5 +15,11 @@ namespace Source.Chess.Runtime.Actions {
             Source = source;
             Target = target;
         }
+
+        public bool Equals(EnPassant other) {
+            return (Equals(Player, other.Player)
+                    && Source == other.Source
+                    && Target == other.Target);
+        }
     }
 }
