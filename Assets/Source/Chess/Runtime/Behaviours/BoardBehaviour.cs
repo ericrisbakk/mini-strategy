@@ -4,7 +4,7 @@ using Sirenix.Serialization;
 using UnityEngine;
 
 namespace Source.Chess.Runtime.Behaviours {
-    public class BoardBehaviour : MonoBehaviour {
+    public class BoardBehaviour : SerializedMonoBehaviour {
 
         #region Variables
 
@@ -14,8 +14,11 @@ namespace Source.Chess.Runtime.Behaviours {
         public Colors blackColors;
         public SquareBehaviour[,] Squares;
         
+        [NonSerialized] public GameObject[,] Pieces = new GameObject[8,8];
+        
         #endregion
-
+        
+        
 #if UNITY_EDITOR
         [Button(ButtonSizes.Medium)]
         public void GenerateBoard() {
