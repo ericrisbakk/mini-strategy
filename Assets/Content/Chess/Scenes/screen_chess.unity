@@ -936,33 +936,10 @@ PrefabInstance:
     - target: {fileID: 4523091892441484241, guid: 0e9860f383bddd64e90f9507be67531f, type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 4523091892441484241, guid: 0e9860f383bddd64e90f9507be67531f, type: 3}
     - target: {fileID: 4523091892441484241, guid: 0e9860f383bddd64e90f9507be67531f, type: 3}
       propertyPath: serializationData.PrefabModifications.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4523091892441484241, guid: 0e9860f383bddd64e90f9507be67531f, type: 3}
-      propertyPath: serializationData.PrefabModifications.Array.data[0]
-      value: '"path":"HighlightColorsDict","add_keys":{"$id":0,"$type":"System.Object[],
-        mscorlib","$rlength":2,"$rcontent":[{"$id":1,"$type":"Source.Chess.Runtime.Behaviours.HighlightType,
-        Chess.Runtime",0},{"$id":2,"$type":"Source.Chess.Runtime.Behaviours.HighlightType,
-        Chess.Runtime",0}]},"remove_keys":null'
-      objectReference: {fileID: 0}
-    - target: {fileID: 4523091892441484241, guid: 0e9860f383bddd64e90f9507be67531f, type: 3}
-      propertyPath: serializationData.PrefabModifications.Array.data[1]
-      value: '"path":"HighlightColorsDict.{0es}","value":{"$id":0,"$type":"Source.Chess.Runtime.Behaviours.Colors,
-        Chess.Runtime","face":{"$type":"UnityEngine.Color, UnityEngine.CoreModule",0,0,0,0},"edges":{"$type":"UnityEngine.Color,
-        UnityEngine.CoreModule",0,0,0,0}}'
-      objectReference: {fileID: 0}
-    - target: {fileID: 4523091892441484241, guid: 0e9860f383bddd64e90f9507be67531f, type: 3}
-      propertyPath: serializationData.PrefabModifications.Array.data[2]
-      value: '"path":"HighlightColorsDict.{0es}.edges","value":{"$id":0,"$type":"UnityEngine.Color,
-        UnityEngine.CoreModule",1,0.722194433,0,0.784313738}'
-      objectReference: {fileID: 0}
-    - target: {fileID: 4523091892441484241, guid: 0e9860f383bddd64e90f9507be67531f, type: 3}
-      propertyPath: serializationData.PrefabModifications.Array.data[3]
-      value: '"path":"HighlightColorsDict.{0es}.face","value":{"$id":0,"$type":"UnityEngine.Color,
-        UnityEngine.CoreModule",1,0.9807522,0,0.784313738}'
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4523091892441484241, guid: 0e9860f383bddd64e90f9507be67531f, type: 3}
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.size
