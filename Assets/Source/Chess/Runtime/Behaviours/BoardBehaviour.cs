@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Behaviours {
     public enum HighlightType {
@@ -29,60 +30,27 @@ namespace Source.Chess.Runtime.Behaviours {
         #region State
 
         [NonSerialized] public GameObject[,] Pieces = new GameObject[8,8];
-        
-        public Vector2Int clickedTarget;
-        public bool clicked;
-        
+
         #endregion
 
         #endregion
-        
-        private void Awake() {
-            foreach (var s in Squares) {
-                s.OnPointerClick -= OnPointerClick;
-                s.OnPointerClick += OnPointerClick;
-                s.OnPointerEnter -= OnPointerEnter;
-                s.OnPointerEnter += OnPointerEnter;
-                s.OnPointerExit -= OnPointerExit;
-                s.OnPointerExit += OnPointerExit;
-            }
-        }
 
-            // TODO: Clicking on somewhere not highlighted while having clicked should set that to the new target.
-            private void OnPointerClick(Vector2Int target) {
-            if (clicked) {
-                if (target == clickedTarget) {
-                    clicked = false;
+        public void Highlight(Dictionary<HighlightType, List<Vector2Int>> highlights) {
+            foreach (var pair in highlights) {
+                var highlight = pair.Key;
+                foreach (var target in pair.Value) {
+                    Highlight(target, highlight);
                 }
-                else {
-                    // clickedTarget = target;
-                }
-            }
-            else {
-                clicked = true;
-                clickedTarget = target;
-            }
-        }
-
-        private void OnPointerEnter(Vector2Int target) {
-            if (!clicked) { 
-                Highlight(target);
             }
         }
         
-        private void OnPointerExit(Vector2Int target) {
-            if (!clicked) { 
-                ClearHighlight();
-            }
-        }
-
-        private void Highlight(Vector2Int target) {
+        public void Highlight(Vector2Int target, HighlightType highlight) {
             var s = Squares[target.x, target.y];
-            s.Highlight(HighlightColorsDict[HighlightType.Selected],
+            s.Highlight(HighlightColorsDict[highlight],
                 true, true, true, true, true);
         }
 
-        private void ClearHighlight() {
+        public void ClearHighlight() {
             foreach (var s in Squares) {
                 s.ClearHighlight();
             }
