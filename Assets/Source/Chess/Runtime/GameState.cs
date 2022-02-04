@@ -17,6 +17,7 @@ namespace Source.Chess.Runtime {
             White = new Player(Color.White);
             Black = new Player(Color.Black);
             Board = new Board(white, black);
+            CurrentPlayer = White;
             ActionCount = 0;
         }
 

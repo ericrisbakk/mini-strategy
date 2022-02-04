@@ -31,7 +31,8 @@ namespace Source.Chess.Runtime.Behaviours {
         #endregion
 
         public Colors defaultColors;
-        public Vector2Int position;
+        public char rank;
+        public char file;
         
         #region State
         
@@ -43,15 +44,15 @@ namespace Source.Chess.Runtime.Behaviours {
         
         #endregion
         
-        public Action<Vector2Int> OnPointerClick;
-        public Action<Vector2Int> OnPointerEnter;
-        public Action<Vector2Int> OnPointerExit;
+        public Action<char, char> OnPointerClick;
+        public Action<char, char> OnPointerEnter;
+        public Action<char, char> OnPointerExit;
         
-        public void PointerClick() { OnPointerClick?.Invoke(position); }
+        public void PointerClick() { OnPointerClick?.Invoke(rank, file); }
         
-        public void PointerEnter() { OnPointerEnter?.Invoke(position); }
+        public void PointerEnter() { OnPointerEnter?.Invoke(rank, file); }
         
-        public void PointerExit() { OnPointerExit?.Invoke(position); }
+        public void PointerExit() { OnPointerExit?.Invoke(rank, file); }
         
 #if UNITY_EDITOR
 
