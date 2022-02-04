@@ -20,7 +20,8 @@ namespace Source.Chess.Runtime.Behaviours {
         
         [NonSerialized] public GameState State;
         [NonSerialized] public LinearHistory History;
-        [NonSerialized] public Vector2Int clickedTarget;
+        [NonSerialized] public char targetRank;
+        [NonSerialized] public char targetFile;
         [NonSerialized] public bool clicked;
 
         #endregion
@@ -63,9 +64,9 @@ namespace Source.Chess.Runtime.Behaviours {
         #region Controller
         
         // TODO: Clicking on somewhere not highlighted while having clicked should set that to the new target.
-        private void OnPointerClick(Vector2Int target) {
+        private void OnPointerClick(char rank, char file) {
             if (clicked) {
-                if (target == clickedTarget) {
+                if (EqualRankAndFile(rank, file)) {
                     clicked = false;
                 }
                 else {
@@ -74,48 +75,63 @@ namespace Source.Chess.Runtime.Behaviours {
             }
             else {
                 clicked = true;
-                clickedTarget = target;
+                SetRankAndFile(rank, file);
             }
         }
 
-        private void OnPointerEnter(Vector2Int target) {
+        private void OnPointerEnter(char rank, char file) {
             if (!clicked) { 
-                board.Highlight(GetHighlightsFromTarget(target));
+                board.Highlight(GetHighlightsFromTarget(rank, file));
             }
         }
         
-        private void OnPointerExit(Vector2Int target) {
+        private void OnPointerExit(char rank, char file) {
             if (!clicked) { 
                 board.ClearHighlight();
             }
         }
 
-        public Dictionary<HighlightType, List<Vector2Int>> GetHighlightsFromTarget(Vector2Int target) {
+        private bool EqualRankAndFile(char rank, char file) => rank == targetRank && file == targetFile;
+
+        private void SetRankAndFile(char rank, char file) {
+            targetRank = rank;
+            targetFile = file;
+        }
+
+        public Dictionary<HighlightType, List<Vector2Int>> GetHighlightsFromTarget(char rank, char file) {
+            var target = Rules.ToVector2Int(rank, file);
             var actions = Rules.GetActions(State, History, target);
             var highlights = GetHighlightDict();
-            highlights[HighlightType.Selected].Add(target);
+            AddHighlight(highlights, HighlightType.Selected, target);
             foreach (var action in actions) {
                 switch (action) {
                     case Move move:
                         if (Rules.MoveCaptures(move))
-                            highlights[HighlightType.Capture].Add(move.Target);
+                            AddHighlight(highlights, HighlightType.Capture, move.Target);
                         else
-                            highlights[HighlightType.Move].Add(move.Target);
+                            AddHighlight(highlights, HighlightType.Move, move.Target);
                         break;
                     case EnPassant enPassant:
-                        highlights[HighlightType.EnPassant].Add(enPassant.Target);
+                        AddHighlight(highlights, HighlightType.EnPassant, enPassant.Target);
                         break;
                     case Promote promote:
-                        highlights[HighlightType.Promotion].Add(promote.Pawn);
+                        AddHighlight(highlights, HighlightType.Promotion, promote.Pawn);
                         break;
                     case Castle castle:
-                        highlights[HighlightType.Castle].Add(castle.Rook);
+                        AddHighlight(highlights, HighlightType.Castle, castle.Rook);
                         break;
                 }
             }
 
             return highlights;
         }
+
+        private void AddHighlight(Dictionary<HighlightType, List<Vector2Int>> dict, HighlightType highlight, 
+            Vector2Int vec) {
+            dict[highlight].Add(ToInternalIndex(vec));
+        }
+        
+        private Vector2Int ToInternalIndex(Vector2Int vec) => new Vector2Int(vec.x - 2, vec.y - 2);
 
         private Dictionary<HighlightType, List<Vector2Int>> GetHighlightDict() {
             var dict = new Dictionary<HighlightType, List<Vector2Int>>();

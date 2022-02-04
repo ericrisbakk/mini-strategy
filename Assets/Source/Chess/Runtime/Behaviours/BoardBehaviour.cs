@@ -65,19 +65,22 @@ namespace Source.Chess.Runtime.Behaviours {
             }
 
             Squares = new SquareBehaviour[8, 8];
-            
-            for (int i = 0; i < 64; i++) {
-                var s = Instantiate(square, transform);
-                var sBehaviour = s.GetComponent<SquareBehaviour>();
-                int x = i / 8;
-                int y = i - (8 * x);
-                Squares[x, y] = sBehaviour;
-                sBehaviour.position = new Vector2Int(x, y);
 
-                var oddRow = x % 2 == 0;
-                var even = i % 2 == 0;
-                sBehaviour.defaultColors = (oddRow && !even) || (!oddRow && even) ? blackColors : whiteColors;
-                sBehaviour.UpdateDefaultColors();
+            for (char rank = '1'; rank < '9'; rank++) {
+                for (char file = 'a'; file < 'i'; file++) {
+                    var s = Instantiate(square, transform);
+                    var sBehaviour = s.GetComponent<SquareBehaviour>();
+                    sBehaviour.rank = rank;
+                    sBehaviour.file = file;
+                    int x = rank - '1';
+                    int y = file - 'a';
+                    Squares[x, y] = sBehaviour;
+
+                    var oddRow = x % 2 == 0;
+                    var even = y % 2 == 0;
+                    sBehaviour.defaultColors = (oddRow && !even) || (!oddRow && even) ? blackColors : whiteColors;
+                    sBehaviour.UpdateDefaultColors();
+                }
             }
         }
 #endif
