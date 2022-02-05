@@ -70,13 +70,37 @@ namespace Source.Chess.Runtime.Behaviours {
                     clicked = false;
                 }
                 else {
-                    // clickedTarget = target;
+                    var highlights = GetHighlightsFromTarget(targetRank, targetFile);
+                    if (ClickedOnHighlight(rank, file, highlights, out var action)) {
+                        Debug.Log($"Action selected: {action}, at {file}{rank}.");
+                        clicked = false;
+                    }
+                    else {
+                        Debug.Log($"No action at at {file}{rank}.");
+                    }
+                    
                 }
             }
             else {
                 clicked = true;
                 SetRankAndFile(rank, file);
             }
+        }
+
+        private bool ClickedOnHighlight(char rank, char file,
+            Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> highlights, out IAction action) {
+            var target = ToInternalIndex(Rules.ToVector2Int(rank, file));
+            foreach (var pair in highlights) {
+                foreach (var tuple in pair.Value) {
+                    if (target == tuple.Item2) {
+                        action = tuple.Item1;
+                        return true;
+                    }
+                }
+            }
+
+            action = null;
+            return false;
         }
 
         private void OnPointerEnter(char rank, char file) {
@@ -96,29 +120,30 @@ namespace Source.Chess.Runtime.Behaviours {
         private void SetRankAndFile(char rank, char file) {
             targetRank = rank;
             targetFile = file;
+            Debug.Log($"Target is: {targetFile}{targetRank}.");
         }
 
-        public Dictionary<HighlightType, List<Vector2Int>> GetHighlightsFromTarget(char rank, char file) {
+        public Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> GetHighlightsFromTarget(char rank, char file) {
             var target = Rules.ToVector2Int(rank, file);
             var actions = Rules.GetActions(State, History, target);
             var highlights = GetHighlightDict();
-            AddHighlight(highlights, HighlightType.Selected, target);
+            AddHighlight(highlights, HighlightType.Selected, null, target);
             foreach (var action in actions) {
                 switch (action) {
                     case Move move:
                         if (Rules.MoveCaptures(move))
-                            AddHighlight(highlights, HighlightType.Capture, move.Target);
+                            AddHighlight(highlights, HighlightType.Capture, action, move.Target);
                         else
-                            AddHighlight(highlights, HighlightType.Move, move.Target);
+                            AddHighlight(highlights, HighlightType.Move, action, move.Target);
                         break;
                     case EnPassant enPassant:
-                        AddHighlight(highlights, HighlightType.EnPassant, enPassant.Target);
+                        AddHighlight(highlights, HighlightType.EnPassant, action, enPassant.Target);
                         break;
                     case Promote promote:
-                        AddHighlight(highlights, HighlightType.Promotion, promote.Pawn);
+                        AddHighlight(highlights, HighlightType.Promotion, action, promote.Pawn);
                         break;
                     case Castle castle:
-                        AddHighlight(highlights, HighlightType.Castle, castle.Rook);
+                        AddHighlight(highlights, HighlightType.Castle, action, castle.Rook);
                         break;
                 }
             }
@@ -126,17 +151,17 @@ namespace Source.Chess.Runtime.Behaviours {
             return highlights;
         }
 
-        private void AddHighlight(Dictionary<HighlightType, List<Vector2Int>> dict, HighlightType highlight, 
-            Vector2Int vec) {
-            dict[highlight].Add(ToInternalIndex(vec));
+        private void AddHighlight(Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> dict, 
+            HighlightType highlight, IAction action, Vector2Int vec) {
+            dict[highlight].Add(new Tuple<IAction, Vector2Int>(action, ToInternalIndex(vec)));
         }
         
         private Vector2Int ToInternalIndex(Vector2Int vec) => new Vector2Int(vec.x - 2, vec.y - 2);
 
-        private Dictionary<HighlightType, List<Vector2Int>> GetHighlightDict() {
-            var dict = new Dictionary<HighlightType, List<Vector2Int>>();
+        private Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> GetHighlightDict() {
+            var dict = new Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>>();
             foreach (int value in Enum.GetValues(typeof(HighlightType))) {
-                dict[(HighlightType) value] = new List<Vector2Int>();
+                dict[(HighlightType) value] = new List<Tuple<IAction, Vector2Int>>();
             }
 
             return dict;

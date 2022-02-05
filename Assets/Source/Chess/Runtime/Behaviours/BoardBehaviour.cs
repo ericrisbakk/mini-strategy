@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -35,11 +36,11 @@ namespace Source.Chess.Runtime.Behaviours {
 
         #endregion
 
-        public void Highlight(Dictionary<HighlightType, List<Vector2Int>> highlights) {
+        public void Highlight(Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> highlights) {
             foreach (var pair in highlights) {
                 var highlight = pair.Key;
-                foreach (var target in pair.Value) {
-                    Highlight(target, highlight);
+                foreach (var tuple in pair.Value) {
+                    Highlight(tuple.Item2, highlight);
                 }
             }
         }
