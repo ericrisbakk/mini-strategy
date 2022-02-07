@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Source.Chess.Runtime.Actions;
+using Source.Chess.Runtime.Steps;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Source.Chess.Runtime.Behaviours {
     public class ViewControllerBehaviour : SerializedMonoBehaviour {
@@ -23,6 +25,7 @@ namespace Source.Chess.Runtime.Behaviours {
         [NonSerialized] public char targetRank;
         [NonSerialized] public char targetFile;
         [NonSerialized] public bool clicked;
+        [NonSerialized] public int viewActionCount;
 
         #endregion
 
@@ -47,18 +50,31 @@ namespace Source.Chess.Runtime.Behaviours {
                 for (char file = 'a'; file < 'i'; file++) {
                     var piece = State.Square(Rules.ToVector2Int(rank, file));
                     if ((int) piece >= 2)
-                        AddPiece(piece, new string(new []{file, rank}));
+                        AddPiece(piece, ToInternalIndex(rank, file));
                 }
             }
         }
 
-        public void AddPiece(PieceType piece, string algebraicNotation) {
-            var x = algebraicNotation[1] - '1';
-            var y = algebraicNotation[0] - 'a';
-            var square = board.Squares[x,  y];
+        public void AddPiece(PieceType piece, Vector2Int target) {
+            var square = board.Squares[target.x,  target.y];
             var go = Instantiate(piecePrefabDict[piece], square.transform);
             go.transform.localPosition = Vector3.zero;
-            board.Pieces[x, y] = go;
+            Assert.IsNull(board.Pieces[target.x, target.y]);
+            board.Pieces[target.x, target.y] = go;
+        }
+
+        public void MovePiece(Vector2Int source, Vector2Int target) {
+            var go = board.Pieces[source.x, source.y];
+            var newParent = board.Squares[target.x, target.y];
+
+            board.Pieces[source.x, source.y] = null;
+            Assert.IsNull(board.Pieces[target.x, target.y]);
+            board.Pieces[target.x, target.y] = go;
+            go.transform.SetParent(newParent.transform, false);
+        }
+
+        public void DestroyPiece(Vector2Int target) {
+            Destroy(board.Pieces[target.x, target.y]);
         }
 
         #region Controller
@@ -73,6 +89,10 @@ namespace Source.Chess.Runtime.Behaviours {
                     var highlights = GetHighlightsFromTarget(targetRank, targetFile);
                     if (ClickedOnHighlight(rank, file, highlights, out var action)) {
                         Debug.Log($"Action selected: {action}, at {file}{rank}.");
+                        Rules.Apply(State, History, action, true);
+                        var steps = History.LastAction.Item2;
+                        UpdateView(steps);
+                        board.ClearHighlight();
                         clicked = false;
                     }
                     else {
@@ -87,6 +107,60 @@ namespace Source.Chess.Runtime.Behaviours {
             }
         }
 
+        #region View Update
+
+        public void UpdateView(List<IStep> steps) {
+            foreach (var step in steps) {
+                switch (step) {
+                    case MoveStep moveStep: HandleMoveStep(moveStep);
+                        break;
+                    case ChangePlayerStep changePlayerStep: HandleChangePlayerStep(changePlayerStep);
+                        break;
+                    case PromotionStep promotionStep: HandlePromotionStep(promotionStep);
+                        break;
+                    case EnPassantStep enPassantStep: HandleEnPassantStep(enPassantStep);
+                        break;
+                    default:
+                        throw new Exception("Couldn't match step when trying to update view.");
+                }
+            }
+        }
+
+        private void HandleChangePlayerStep(ChangePlayerStep changePlayerStep) {
+            Debug.Log($"Current player is: {State.CurrentPlayer.Color}");
+        }
+
+        private void HandleEnPassantStep(EnPassantStep enPassantStep) {
+            var source = enPassantStep.EnPassant.Source;
+            var target = enPassantStep.EnPassant.Target;
+            var capture = enPassantStep.EnPassant.Capture;
+            
+            DestroyPiece(capture);
+            MovePiece(source, target);
+            
+        }
+
+        private void HandlePromotionStep(PromotionStep promotionStep) {
+            var promotion = promotionStep.Promote.Promotion;
+            var target = ToInternalIndex(promotionStep.Promote.Pawn);
+            
+            DestroyPiece(target);
+            AddPiece(promotion, target);
+        }
+
+        private void HandleMoveStep(MoveStep step) {
+            var source = ToInternalIndex(step.Move.Source);
+            var target = ToInternalIndex(step.Move.Target);
+            var targetGO = board.Pieces[target.x, target.y];
+            
+            if (Rules.MoveCaptures(step.Move))
+                DestroyPiece(target);
+
+            MovePiece(source, target);
+        }
+
+        #endregion
+        
         private bool ClickedOnHighlight(char rank, char file,
             Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> highlights, out IAction action) {
             var target = ToInternalIndex(Rules.ToVector2Int(rank, file));
@@ -157,6 +231,8 @@ namespace Source.Chess.Runtime.Behaviours {
         }
         
         private Vector2Int ToInternalIndex(Vector2Int vec) => new Vector2Int(vec.x - 2, vec.y - 2);
+
+        private Vector2Int ToInternalIndex(char rank, char file) => new Vector2Int(rank - '1', file - 'a');
 
         private Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> GetHighlightDict() {
             var dict = new Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>>();
