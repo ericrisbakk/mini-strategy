@@ -75,6 +75,7 @@ namespace Source.Chess.Runtime.Behaviours {
 
         public void DestroyPiece(Vector2Int target) {
             Destroy(board.Pieces[target.x, target.y]);
+            board.Pieces[target.x, target.y] = null;
         }
 
         #region Controller
@@ -131,9 +132,9 @@ namespace Source.Chess.Runtime.Behaviours {
         }
 
         private void HandleEnPassantStep(EnPassantStep enPassantStep) {
-            var source = enPassantStep.EnPassant.Source;
-            var target = enPassantStep.EnPassant.Target;
-            var capture = enPassantStep.EnPassant.Capture;
+            var source = ToInternalIndex(enPassantStep.EnPassant.Source);
+            var target = ToInternalIndex(enPassantStep.EnPassant.Target);
+            var capture = ToInternalIndex(enPassantStep.EnPassant.Capture);
             
             DestroyPiece(capture);
             MovePiece(source, target);
@@ -151,7 +152,6 @@ namespace Source.Chess.Runtime.Behaviours {
         private void HandleMoveStep(MoveStep step) {
             var source = ToInternalIndex(step.Move.Source);
             var target = ToInternalIndex(step.Move.Target);
-            var targetGO = board.Pieces[target.x, target.y];
             
             if (Rules.MoveCaptures(step.Move))
                 DestroyPiece(target);
