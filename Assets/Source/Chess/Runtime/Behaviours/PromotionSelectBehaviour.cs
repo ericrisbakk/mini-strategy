@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using Source.Chess.Runtime.Actions;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -24,13 +25,24 @@ namespace Source.Chess.Runtime.Behaviours {
                 var button = Instantiate(pieceButton, transform);
                 var pieceImg = Instantiate(viewController.piecePrefabDict[(PieceType) i], button.transform);
                 pieceImg.transform.localScale = pieceImgScale;
+
+                var pieceBehaviour = pieceImg.GetComponent<PieceBehaviour>();
+                var promotionButtonBehaviour = button.GetComponent<PromotionButtonBehaviour>();
+                promotionButtonBehaviour.Piece = pieceBehaviour;
+                promotionButtonBehaviour.Callback -= PromoteTo;
+                promotionButtonBehaviour.Callback += PromoteTo;
             }
         }
 
         private void DestroyChildren() {
             for (int i = 0; i < transform.childCount; i++) {
-                Destroy(transform.GetChild(i));
+                Destroy(transform.GetChild(i).gameObject);
             }
+        }
+
+        public void PromoteTo(PieceType piece) {
+            viewController.Promote(piece);
+            DestroyChildren();
         }
     }
 }

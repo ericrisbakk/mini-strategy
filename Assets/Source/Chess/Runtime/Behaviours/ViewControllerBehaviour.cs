@@ -14,6 +14,7 @@ namespace Source.Chess.Runtime.Behaviours {
         #region Variables
 
         public BoardBehaviour board;
+        public PromotionSelectBehaviour promotionSelect;
         public BoardConfiguration startingConfiguration;
         public GameObject piecesParent;
         public Dictionary<PieceType, GameObject> piecePrefabDict;
@@ -90,11 +91,7 @@ namespace Source.Chess.Runtime.Behaviours {
                     var highlights = GetHighlightsFromTarget(targetRank, targetFile);
                     if (ClickedOnHighlight(rank, file, highlights, out var action)) {
                         Debug.Log($"Action selected: {action}, at {file}{rank}.");
-                        Rules.Apply(State, History, action, true);
-                        var steps = History.LastAction.Item2;
-                        UpdateView(steps);
-                        board.ClearHighlight();
-                        clicked = false;
+                        UpdateState(action);
                     }
                     else {
                         Debug.Log($"No action at at {file}{rank}.");
@@ -106,6 +103,19 @@ namespace Source.Chess.Runtime.Behaviours {
                 clicked = true;
                 SetRankAndFile(rank, file);
             }
+        }
+
+        public void Promote(PieceType promotion) {
+            UpdateState(new Promote(State.CurrentPlayer, State.PromotionTarget, promotion));
+            Debug.Log($"Promoted pawn to {State.Square(State.PromotionTarget)}.");
+        }
+
+        private void UpdateState(IAction action) {
+            Rules.Apply(State, History, action, true);
+            var steps = History.LastAction.Item2;
+            UpdateView(steps);
+            board.ClearHighlight();
+            clicked = false;
         }
 
         #region View Update
@@ -124,6 +134,10 @@ namespace Source.Chess.Runtime.Behaviours {
                     default:
                         throw new Exception("Couldn't match step when trying to update view.");
                 }
+            }
+
+            if (State.PromotionNeeded) {
+                promotionSelect.PresentPromotions(State.CurrentPlayer.Color);
             }
         }
 
