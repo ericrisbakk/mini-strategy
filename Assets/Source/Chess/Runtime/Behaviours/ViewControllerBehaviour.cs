@@ -29,8 +29,21 @@ namespace Source.Chess.Runtime.Behaviours {
         [NonSerialized] public int viewActionCount;
 
         #endregion
+        
+        #region Lambdas
+        private Vector2Int ToInternalIndex(Vector2Int vec) => new Vector2Int(vec.x - 2, vec.y - 2);
+        private Vector2Int ToInternalIndex(char rank, char file) => new Vector2Int(rank - '1', file - 'a');
+        private bool EqualRankAndFile(char rank, char file) => rank == targetRank && file == targetFile;
+        
+        #endregion
 
         #endregion
+        
+        private void SetRankAndFile(char rank, char file) {
+            targetRank = rank;
+            targetFile = file;
+            Debug.Log($"Target is: {targetFile}{targetRank}.");
+        }
 
         private void Awake() {
             SetupGame();
@@ -43,6 +56,8 @@ namespace Source.Chess.Runtime.Behaviours {
                 s.OnPointerExit += OnPointerExit;
             }
         }
+
+        #region Controller
 
         /// <summary>
         /// Using the `startingConfiguration`, place black and white pieces on the board.
@@ -95,6 +110,7 @@ namespace Source.Chess.Runtime.Behaviours {
             Destroy(board.Pieces[target.x, target.y]);
             board.Pieces[target.x, target.y] = null;
         }
+
         
         /// <summary>
         /// Behaviour when the player clicks on a square on the board.
@@ -144,6 +160,10 @@ namespace Source.Chess.Runtime.Behaviours {
             board.ClearHighlight();
             clicked = false;
         }
+        
+        #endregion
+
+        #region View
         
         /// <summary>
         /// Updated the view based on step information - additionally checks whether to allow the player to promote.
@@ -230,14 +250,8 @@ namespace Source.Chess.Runtime.Behaviours {
                 board.ClearHighlight();
             }
         }
+        
 
-        private bool EqualRankAndFile(char rank, char file) => rank == targetRank && file == targetFile;
-
-        private void SetRankAndFile(char rank, char file) {
-            targetRank = rank;
-            targetFile = file;
-            Debug.Log($"Target is: {targetFile}{targetRank}.");
-        }
 
         /// <summary>
         /// Gets all the actions for a given piece, then sorts them based on what kind of highlight they are.
@@ -272,16 +286,12 @@ namespace Source.Chess.Runtime.Behaviours {
 
             return highlights;
         }
-
+        
         private void AddHighlight(Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> dict, 
             HighlightType highlight, IAction action, Vector2Int vec) {
             dict[highlight].Add(new Tuple<IAction, Vector2Int>(action, ToInternalIndex(vec)));
         }
         
-        private Vector2Int ToInternalIndex(Vector2Int vec) => new Vector2Int(vec.x - 2, vec.y - 2);
-
-        private Vector2Int ToInternalIndex(char rank, char file) => new Vector2Int(rank - '1', file - 'a');
-
         private Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> GetHighlightDict() {
             var dict = new Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>>();
             foreach (int value in Enum.GetValues(typeof(HighlightType))) {
@@ -291,6 +301,8 @@ namespace Source.Chess.Runtime.Behaviours {
             return dict;
         }
         
+        #endregion
+
 #if UNITY_EDITOR
         private void Reset() {
             piecePrefabDict = new Dictionary<PieceType, GameObject>();
