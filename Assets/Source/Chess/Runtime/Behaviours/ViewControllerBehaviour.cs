@@ -44,6 +44,9 @@ namespace Source.Chess.Runtime.Behaviours {
             }
         }
 
+        /// <summary>
+        /// Using the `startingConfiguration`, place black and white pieces on the board.
+        /// </summary>
         public void SetupGame() {
             State = new GameState(startingConfiguration.white, startingConfiguration.black);
             History = new LinearHistory();
@@ -56,6 +59,11 @@ namespace Source.Chess.Runtime.Behaviours {
             }
         }
 
+        /// <summary>
+        /// Adds piece GO at target location. Asserts that there is no piece at that location from before.
+        /// </summary>
+        /// <param name="piece"></param>
+        /// <param name="target"></param>
         public void AddPiece(PieceType piece, Vector2Int target) {
             var square = board.Squares[target.x,  target.y];
             var go = Instantiate(piecePrefabDict[piece], square.transform);
@@ -63,7 +71,12 @@ namespace Source.Chess.Runtime.Behaviours {
             Assert.IsNull(board.Pieces[target.x, target.y]);
             board.Pieces[target.x, target.y] = go;
         }
-
+        
+        /// <summary>
+        /// Moves a piece GO from location A to B. Asserts that the target location is empty.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
         public void MovePiece(Vector2Int source, Vector2Int target) {
             var go = board.Pieces[source.x, source.y];
             var newParent = board.Squares[target.x, target.y];
@@ -74,14 +87,20 @@ namespace Source.Chess.Runtime.Behaviours {
             go.transform.SetParent(newParent.transform, false);
         }
 
+        /// <summary>
+        /// Destroy piece at target location.
+        /// </summary>
+        /// <param name="target"></param>
         public void DestroyPiece(Vector2Int target) {
             Destroy(board.Pieces[target.x, target.y]);
             board.Pieces[target.x, target.y] = null;
         }
-
-        #region Controller
         
-        // TODO: Clicking on somewhere not highlighted while having clicked should set that to the new target.
+        /// <summary>
+        /// Behaviour when the player clicks on a square on the board.
+        /// </summary>
+        /// <param name="rank"></param>
+        /// <param name="file"></param>
         private void OnPointerClick(char rank, char file) {
             if (clicked) {
                 if (EqualRankAndFile(rank, file)) {
@@ -105,11 +124,19 @@ namespace Source.Chess.Runtime.Behaviours {
             }
         }
 
+        /// <summary>
+        /// Called by the `PromotionSelectBehaviour` after the player has selected something to promote.
+        /// </summary>
+        /// <param name="promotion"></param>
         public void Promote(PieceType promotion) {
             UpdateState(new Promote(State.CurrentPlayer, State.PromotionTarget, promotion));
             Debug.Log($"Promoted pawn to {State.Square(State.PromotionTarget)}.");
         }
 
+        /// <summary>
+        /// Called to update the state, then use the resulting steps to update the view.
+        /// </summary>
+        /// <param name="action"></param>
         private void UpdateState(IAction action) {
             Rules.Apply(State, History, action, true);
             var steps = History.LastAction.Item2;
@@ -117,9 +144,12 @@ namespace Source.Chess.Runtime.Behaviours {
             board.ClearHighlight();
             clicked = false;
         }
-
-        #region View Update
-
+        
+        /// <summary>
+        /// Updated the view based on step information - additionally checks whether to allow the player to promote.
+        /// </summary>
+        /// <param name="steps"></param>
+        /// <exception cref="Exception"></exception>
         public void UpdateView(List<IStep> steps) {
             foreach (var step in steps) {
                 switch (step) {
@@ -140,7 +170,7 @@ namespace Source.Chess.Runtime.Behaviours {
                 promotionSelect.PresentPromotions(State.CurrentPlayer.Color);
             }
         }
-
+        
         private void HandleChangePlayerStep(ChangePlayerStep changePlayerStep) {
             Debug.Log($"Current player is: {State.CurrentPlayer.Color}");
         }
@@ -172,8 +202,6 @@ namespace Source.Chess.Runtime.Behaviours {
 
             MovePiece(source, target);
         }
-
-        #endregion
         
         private bool ClickedOnHighlight(char rank, char file,
             Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> highlights, out IAction action) {
@@ -211,6 +239,12 @@ namespace Source.Chess.Runtime.Behaviours {
             Debug.Log($"Target is: {targetFile}{targetRank}.");
         }
 
+        /// <summary>
+        /// Gets all the actions for a given piece, then sorts them based on what kind of highlight they are.
+        /// </summary>
+        /// <param name="rank"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public Dictionary<HighlightType, List<Tuple<IAction, Vector2Int>>> GetHighlightsFromTarget(char rank, char file) {
             var target = Rules.ToVector2Int(rank, file);
             var actions = Rules.GetActions(State, History, target);
@@ -257,8 +291,6 @@ namespace Source.Chess.Runtime.Behaviours {
             return dict;
         }
         
-        #endregion
-
 #if UNITY_EDITOR
         private void Reset() {
             piecePrefabDict = new Dictionary<PieceType, GameObject>();
