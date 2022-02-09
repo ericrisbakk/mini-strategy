@@ -13,8 +13,8 @@ namespace Source.Chess.Runtime.Steps {
         public static readonly PieceType[] Kings = {PieceType.WKing, PieceType.BKing};
         
         public static void ActionCountValid(GameState state, LinearHistory history) {
-            Assert.IsTrue(0 <= state.ActionCount && state.ActionCount < history.Events.Count,
-                "0 <= state.ActionCount && state.ActionCount < history.Events.Count");
+            Assert.IsTrue(0 <= state.ActionCount && state.ActionCount <= history.Events.Count,
+                "0 <= state.ActionCount && state.ActionCount <= history.Events.Count");
         }
         
         /// <summary>
@@ -88,7 +88,12 @@ namespace Source.Chess.Runtime.Steps {
 
         public static void StepIs(IStep step, Type type) {
             Assert.IsTrue(step.GetType() == type,
-                $"Given step should be of type {type}.");
+                $"Given step {step} should be of type {type}.");
+        }
+
+        public static void StepIsSubclassOf(IStep step, Type type) {
+            Assert.IsTrue(step.GetType().IsSubclassOf(type),
+                $"Given step {step} should be a subclass of type {type}");
         }
     }
 }

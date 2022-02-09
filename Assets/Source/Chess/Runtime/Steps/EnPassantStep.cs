@@ -76,7 +76,7 @@ namespace Source.Chess.Runtime.Steps {
             
             var lastAction = history.GetActionFromNow(state, (isForward ? 1 : 2));
             var step = lastAction.Item2[0];
-            StepValidation.StepIs(step, typeof(MoveStep));
+            StepValidation.StepIsSubclassOf(step, typeof(MoveStep));
             var move = (MoveStep) step;
             var otherColor = move.Move.Player.Color;
             var otherStart = Rules.GetPawnStartRow(otherColor);
