@@ -3602,6 +3602,17 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &606744346 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3647999108364138728, guid: c84581a0db7d0684d880ab630f25ec24, type: 3}
+  m_PrefabInstance: {fileID: 606744342}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606744344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 921b66bd60a795f42b4a143ebc5181eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &684856926
 GameObject:
   m_ObjectHideFlags: 0
@@ -3986,5 +3997,6 @@ MonoBehaviour:
       Entry: 8
       Data: 
   board: {fileID: 316168702}
+  promotionSelect: {fileID: 606744346}
   startingConfiguration: {fileID: 11400000, guid: f2a3a3dc9939e794bb703bb931ceb1aa, type: 2}
   piecesParent: {fileID: 62198934}
