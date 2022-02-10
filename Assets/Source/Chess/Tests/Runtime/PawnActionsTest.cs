@@ -3,23 +3,13 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Source.Chess.Runtime;
 using Source.Chess.Runtime.Actions;
-using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
-using UnityEngine;
 using static Source.Chess.Runtime.Rules;
 using static Source.Chess.Tests.Runtime.TestUtility;
 
 namespace Source.Chess.Tests.Runtime {
     public class PawnActionsTest {
-        private Move Add(Player player, PieceType piece, string source, PieceType capture, string target)
-            => new Move(player, piece, ToVector2Int(source[1], source[0]), capture, ToVector2Int(target[1], target[0]));
-
-        private Promote Add(Player player, string target, PieceType promotion) 
-            => new Promote(player, ToVector2Int(target[1], target[0]), promotion);
-
-        private EnPassant Add(Player player, string source, string target)
-            => new EnPassant(player, ToVector2Int(source[1], source[0]), ToVector2Int(target[1], target[0]));
 
         [Test]
         public void TestPawnStartMoveGeneration() {
