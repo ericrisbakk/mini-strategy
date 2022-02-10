@@ -136,6 +136,14 @@ namespace Source.Chess.Runtime {
         #endregion
 
         #region Action
+
+        public static Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>> PieceActionDict =
+            new Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>>() {
+                {PieceType.WPawn, GetPawnActions},
+                {PieceType.BPawn, GetPawnActions},
+                {PieceType.WKnight, GetKnightActions},
+                {PieceType.BKnight, GetKnightActions},
+            };
         
         public static List<IAction> GetActions(GameState state, LinearHistory history, Vector2Int source) {
             var actions = new List<IAction>();
@@ -165,7 +173,7 @@ namespace Source.Chess.Runtime {
                     for (int j = 0; j < 8; j++) {
                         var t = new Vector2Int(2 + i, 2 + j);
                         if(OwnsPiece(state.CurrentPlayer, state.Squares()[t.x, t.y])) {
-                            actions.AddRange(GetActions(state, history, t));
+                            actions.AddRange(PieceActionDict[state.Square(t)].Invoke(state, history, t));
                         }
                     }
                 }
@@ -226,6 +234,40 @@ namespace Source.Chess.Runtime {
 
             return actions;
         }
+
+        public static List<IAction> GetMovementLine(GameState state, Vector2Int target, int dx, int dy, int length) {
+            var piece = state.Square(target);
+            var l = new List<IAction>();
+            for (int i = 1; i <= length; i++) {
+                var pos = new Vector2Int(target.x + dx*i, target.y + dy*i);
+                var otherPiece = state.Square(pos);
+                if (otherPiece == PieceType.Empty) {
+                    l.Add(new Move(state.CurrentPlayer, piece, target, otherPiece, pos));
+                    continue;
+                }
+                if (IsPiece(otherPiece) && ColorOfPiece(piece) != ColorOfPiece(otherPiece)) {
+                    l.Add(new Move(state.CurrentPlayer, piece, target, otherPiece, pos));
+                }
+
+                break;
+            }
+
+            return l;
+        }
+
+        public static List<IAction> GetKnightActions(GameState state, LinearHistory history, Vector2Int target) {
+            var l = new List<IAction>();
+            l.AddRange(GetMovementLine(state, target, 1, 2, 1));
+            l.AddRange(GetMovementLine(state, target, 2, 1, 1));
+            l.AddRange(GetMovementLine(state, target, -1, 2, 1));
+            l.AddRange(GetMovementLine(state, target, -2, 1, 1));
+            l.AddRange(GetMovementLine(state, target, 1, -2, 1));
+            l.AddRange(GetMovementLine(state, target, 2, -1, 1));
+            l.AddRange(GetMovementLine(state, target, -1, -2, 1));
+            l.AddRange(GetMovementLine(state, target, -2, -1, 1));
+
+            return l;
+        }
         
         public static Vector2Int ToVector2Int(char rank, char file) {
             int x = rank - '1' + 2;
@@ -241,6 +283,8 @@ namespace Source.Chess.Runtime {
         
         #region Checks
 
+        public static bool IsPiece(PieceType piece) => (int) piece > 1;
+        
         /// <summary>
         /// Checks whether the given player owns the given piece by using integer enum values of `PieceType`
         /// </summary>
