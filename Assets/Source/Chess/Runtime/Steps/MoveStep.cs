@@ -60,8 +60,7 @@ namespace Source.Chess.Runtime.Steps {
             var s = Move.Source;
             var t = Move.Target;
             StepValidation.PositionIsPiece(state.Squares(), s, Move.Piece);
-            Assert.IsTrue(state.Squares()[t.x, t.y] != PieceType.OutOfBounds,
-                "Move target cannot be out of bounds.");
+            StepValidation.InBounds(state, t);
             StepValidation.PositionIsPiece(state.Squares(), t, Move.Capture);
 
             return state;

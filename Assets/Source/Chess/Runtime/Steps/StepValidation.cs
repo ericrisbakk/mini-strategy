@@ -35,7 +35,7 @@ namespace Source.Chess.Runtime.Steps {
         /// </summary>
         public static void OwnsPiece(Player player, PieceType piece) {
             Assert.IsTrue(Rules.OwnsPiece(player, piece),
-                "Player and piece color do not match.");
+                $"Player {player.Color} and piece color {Rules.ColorOfPiece(piece)} do not match.");
         }
 
         /// <summary>
@@ -43,7 +43,12 @@ namespace Source.Chess.Runtime.Steps {
         /// </summary>
         public static void InBounds(PieceType piece, string target) {
             Assert.IsTrue(piece != PieceType.OutOfBounds,
-                $"{target} value should never be `OutOfBounds`");
+                $"{target} value should never be {PieceType.OutOfBounds}");
+        }
+
+        public static void InBounds(GameState state, Vector2Int target) {
+            Assert.IsTrue(state.Square(target) != PieceType.OutOfBounds,
+                $"Target {target} value should never be {PieceType.OutOfBounds}.");
         }
 
         /// <summary>

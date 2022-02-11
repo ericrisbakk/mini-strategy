@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Source.Chess.Runtime;
 using Source.Chess.Runtime.Actions;
+using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
@@ -10,6 +11,16 @@ using static Source.Chess.Runtime.Rules;
 
 namespace Source.Chess.Tests.Runtime {
     public static class TestUtility {
+        
+        public static Move Add(Player player, PieceType piece, string source, PieceType capture, string target)
+            => new Move(player, piece, ToVector2Int(source[1], source[0]), capture, ToVector2Int(target[1], target[0]));
+        
+        public static Promote Add(Player player, string target, PieceType promotion) 
+            => new Promote(player, ToVector2Int(target[1], target[0]), promotion);
+
+        public static EnPassant Add(Player player, string source, string target)
+            => new EnPassant(player, ToVector2Int(source[1], source[0]), ToVector2Int(target[1], target[0]));
+        
         public static Tuple<Vector2Int, PieceType> GetTuple(int x, int y, PieceType piece)
             => new Tuple<Vector2Int, PieceType>(new Vector2Int(x, y), piece);
         
@@ -40,7 +51,8 @@ namespace Source.Chess.Tests.Runtime {
         
         public static void AssertActionsEqualAndUnique(List<IAction> actions, List<IAction> expected) {
             Assert.IsTrue(actions.Count == expected.Count,
-                "Number of actions generated does not match number of expected actions.");
+                $"Number of actions generated ({actions.Count}) does not match number of expected" +
+                $"({expected.Count}) actions.");
             
             int[] counts = new int[actions.Count];
             
