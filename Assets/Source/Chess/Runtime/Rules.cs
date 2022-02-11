@@ -294,6 +294,26 @@ namespace Source.Chess.Runtime {
         
         #region Checks
 
+        /// <summary>
+        /// Checks whether all squares between source (excluding) and target (excluding), are empty. Assumes that
+        /// they exist on a horizontal, vertical, or diagonal (45 degree) line.
+        /// </summary>
+        /// <returns></returns>
+        public static bool EmptyLine(GameState state, Vector2Int source, Vector2Int target) {
+            var dx = Math.Sign(target.x - source.x);
+            var dy = Math.Sign(target.y - source.y);
+            var x = source.x + dx;
+            var y = source.y +dy;
+            while (x != target.x && y != target.y) {
+                if (state.Square(x, y) != PieceType.Empty)
+                    return false;
+                x += dx;
+                y += dy;
+            }
+
+            return true;
+        }
+        
         public static bool IsPiece(PieceType piece) => (int) piece > 1;
         
         /// <summary>

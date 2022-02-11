@@ -100,5 +100,24 @@ namespace Source.Chess.Runtime.Steps {
             Assert.IsTrue(step.GetType().IsSubclassOf(type),
                 $"Given step {step} should be a subclass of type {type}");
         }
+
+        public static void AssertEmptyLine(GameState state, Vector2Int source, Vector2Int target) {
+            Assert.IsTrue(Rules.EmptyLine(state, source, target),
+                $"Squares between {source} and {target} must be empty.");
+        }
+
+        public static void AssertStraightMovement(Vector2Int source, Vector2Int target) {
+            var dx = target.x - source.x;
+            var dy = target.y - source.y;
+            Assert.IsTrue((dx == 0 && dy != 0) || (dx != 0 && dy == 0),
+                $"Movement form {source} to {target} must be straight (horizontal or vertical).");
+        }
+        
+        public static void AssertDiagonalMovement(Vector2Int source, Vector2Int target) {
+            var dx = target.x - source.x;
+            var dy = target.y - source.y;
+            Assert.IsTrue(Math.Abs(dx) == Math.Abs(dy),
+                $"Movement form {source} to {target} must be straight diagonal (45 degrees).");
+        }
     }
 }
