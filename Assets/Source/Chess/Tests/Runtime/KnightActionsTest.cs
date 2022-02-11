@@ -21,7 +21,7 @@ namespace Source.Chess.Tests.Runtime {
             var whiteTests = new List<Tuple<string, List<IAction>>>() {
                 // TODO Wrong location for piece?
                 // TODO: I can make a single method in which I list all the targets in a single string instead.
-                new Tuple<string, List<IAction>>("b2", new List<IAction>() {
+                new Tuple<string, List<IAction>>("c3", new List<IAction>() {
                     Add(state.CurrentPlayer, PieceType.WKnight, "c3", PieceType.Empty, "b1"),
                     Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"a2"),
                     Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"a4"),

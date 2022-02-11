@@ -137,8 +137,8 @@ namespace Source.Chess.Runtime {
 
         #region Action
 
-        public static Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>> PieceActionDict =
-            new Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>>() {
+        public static readonly Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>> 
+            PieceActionDict = new Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>>() {
                 {PieceType.WPawn, GetPawnActions},
                 {PieceType.BPawn, GetPawnActions},
                 {PieceType.WKnight, GetKnightActions},
@@ -147,13 +147,14 @@ namespace Source.Chess.Runtime {
         
         public static List<IAction> GetActions(GameState state, LinearHistory history, Vector2Int source) {
             var actions = new List<IAction>();
+            var piece = state.Square(source);
             if (state.PromotionNeeded) {
                 if (state.PromotionTarget != source)
                     return actions;
                 actions.AddRange(GetPromoteActions(state));
             }
-            else if(OwnsPiece(state.CurrentPlayer, state.Squares()[source.x, source.y]))
-                actions.AddRange(GetPawnActions(state, history, source));
+            else if(OwnsPiece(state.CurrentPlayer, piece))
+                actions.AddRange(PieceActionDict[piece].Invoke(state, history, source));
             return actions;
         }
 
@@ -173,7 +174,7 @@ namespace Source.Chess.Runtime {
                     for (int j = 0; j < 8; j++) {
                         var t = new Vector2Int(2 + i, 2 + j);
                         if(OwnsPiece(state.CurrentPlayer, state.Squares()[t.x, t.y])) {
-                            actions.AddRange(PieceActionDict[state.Square(t)].Invoke(state, history, t));
+                            actions.AddRange(GetActions(state, history, t));
                         }
                     }
                 }

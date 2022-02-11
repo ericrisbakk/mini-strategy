@@ -51,7 +51,8 @@ namespace Source.Chess.Tests.Runtime {
         
         public static void AssertActionsEqualAndUnique(List<IAction> actions, List<IAction> expected) {
             Assert.IsTrue(actions.Count == expected.Count,
-                "Number of actions generated does not match number of expected actions.");
+                $"Number of actions generated ({actions.Count}) does not match number of expected" +
+                $"({expected.Count}) actions.");
             
             int[] counts = new int[actions.Count];
             
