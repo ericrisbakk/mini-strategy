@@ -59,7 +59,25 @@ namespace Source.Chess.Runtime {
         
         #endregion
 
+        public static readonly Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>> 
+            PieceActionDict = new Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>>() {
+                {PieceType.WPawn, GetPawnActions},
+                {PieceType.BPawn, GetPawnActions},
+                {PieceType.WKnight, GetKnightActions},
+                {PieceType.BKnight, GetKnightActions},
+            };
+
+        public static readonly Dictionary<PieceType, Func<Move, MoveStep>> PieceStepDict =
+            new Dictionary<PieceType, Func<Move, MoveStep>>() {
+                {PieceType.WPawn, move => new PawnMoveStep(move)},
+                {PieceType.BPawn, move => new PawnMoveStep(move)},
+                {PieceType.WKnight, move => new KnightMoveStep(move)},
+                {PieceType.BKnight, move => new KnightMoveStep(move)},
+            };
+
         #region Steps
+        
+        
         
         /// <summary>
         /// Updates the state and history with the results of applying the given action.
@@ -99,7 +117,7 @@ namespace Source.Chess.Runtime {
         /// <exception cref="Exception"></exception>
         public static IStep<GameState, LinearHistory> GetNextStep(GameState state, LinearHistory history, IAction action) {
             return action switch {
-                Move move => new PawnMoveStep(move),
+                Move move => PieceStepDict[move.Piece].Invoke(move),
                 Promote promote => new PromotionStep(promote),
                 EnPassant enPassant => new EnPassantStep(enPassant),
                 _ => throw new Exception("Could not get next step, action was not recognized.")
@@ -136,14 +154,6 @@ namespace Source.Chess.Runtime {
         #endregion
 
         #region Action
-
-        public static readonly Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>> 
-            PieceActionDict = new Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>>() {
-                {PieceType.WPawn, GetPawnActions},
-                {PieceType.BPawn, GetPawnActions},
-                {PieceType.WKnight, GetKnightActions},
-                {PieceType.BKnight, GetKnightActions},
-            };
         
         public static List<IAction> GetActions(GameState state, LinearHistory history, Vector2Int source) {
             var actions = new List<IAction>();
