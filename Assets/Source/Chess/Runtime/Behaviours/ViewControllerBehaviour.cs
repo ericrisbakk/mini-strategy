@@ -127,6 +127,7 @@ namespace Source.Chess.Runtime.Behaviours {
                     if (ClickedOnHighlight(rank, file, highlights, out var action)) {
                         Debug.Log($"Action selected: {action}, at {file}{rank}.");
                         UpdateState(action);
+                        board.Highlight(GetHighlightsFromTarget(rank, file));
                     }
                     else {
                         Debug.Log($"No action at at {file}{rank}.");

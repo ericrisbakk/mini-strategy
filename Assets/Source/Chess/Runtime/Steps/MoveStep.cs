@@ -95,6 +95,7 @@ namespace Source.Chess.Runtime.Steps {
         }
 
         public override GameState CommonValidation(GameState state, LinearHistory history) {
+            base.CommonValidation(state, history);
             var s = Move.Source;
             var t = Move.Target;
             var start = Rules.GetPawnStartRow(Move.Player.Color);
@@ -127,6 +128,17 @@ namespace Source.Chess.Runtime.Steps {
             Assert.IsTrue((Math.Abs(t.x - s.x) == 2 && Math.Abs(t.y - s.y) == 1)
                 || (Math.Abs(t.x - s.x) == 1 && Math.Abs(t.y - s.y) == 2),
                 "Knight move must be 2-then-1.");
+            return state;
+        }
+    }
+
+    public class RookMoveStep : MoveStep {
+        public RookMoveStep(Move move) : base(move) { }
+
+        public override GameState CommonValidation(GameState state, LinearHistory history) {
+            base.CommonValidation(state, history);
+            StepValidation.AssertStraightMovement(Move.Source, Move.Target);
+            StepValidation.AssertEmptyLine(state, Move.Source, Move.Target);
             return state;
         }
     }

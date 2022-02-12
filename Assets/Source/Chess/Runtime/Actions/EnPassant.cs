@@ -15,6 +15,15 @@ namespace Source.Chess.Runtime.Actions {
             Source = source;
             Target = target;
         }
+        
+        /// <summary>
+        /// `source` and `target` converted to `Vector2Int` using `Rules.ToVector2Int()`
+        /// </summary>
+        public EnPassant(Player player, string source, string target) {
+            Player = player;
+            Source = Rules.ToVector2Int(source[1], source[0]);
+            Target = Rules.ToVector2Int(target[1], target[0]);
+        }
 
         public bool Equals(EnPassant other) {
             return (Equals(Player, other.Player)

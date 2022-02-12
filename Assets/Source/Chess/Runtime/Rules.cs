@@ -65,6 +65,8 @@ namespace Source.Chess.Runtime {
                 {PieceType.BPawn, GetPawnActions},
                 {PieceType.WKnight, GetKnightActions},
                 {PieceType.BKnight, GetKnightActions},
+                {PieceType.WRook, GetRookActions},
+                {PieceType.BRook, GetRookActions},
             };
 
         public static readonly Dictionary<PieceType, Func<Move, MoveStep>> PieceStepDict =
@@ -73,6 +75,8 @@ namespace Source.Chess.Runtime {
                 {PieceType.BPawn, move => new PawnMoveStep(move)},
                 {PieceType.WKnight, move => new KnightMoveStep(move)},
                 {PieceType.BKnight, move => new KnightMoveStep(move)},
+                {PieceType.WRook, move => new RookMoveStep(move)},
+                {PieceType.BRook, move => new RookMoveStep(move)},
             };
 
         #region Steps
@@ -279,6 +283,16 @@ namespace Source.Chess.Runtime {
 
             return l;
         }
+
+        public static List<IAction> GetRookActions(GameState state, LinearHistory history, Vector2Int target) {
+            var l = new List<IAction>();
+            l.AddRange(GetMovementLine(state, target, 1, 0, 8));
+            l.AddRange(GetMovementLine(state, target, -1, 0, 8));
+            l.AddRange(GetMovementLine(state, target, 0, 1, 8));
+            l.AddRange(GetMovementLine(state, target, 0, -1, 8));
+            
+            return l;
+        }
         
         public static Vector2Int ToVector2Int(char rank, char file) {
             int x = rank - '1' + 2;
@@ -294,6 +308,26 @@ namespace Source.Chess.Runtime {
         
         #region Checks
 
+        /// <summary>
+        /// Checks whether all squares between source (excluding) and target (excluding), are empty. Assumes that
+        /// they exist on a horizontal, vertical, or diagonal (45 degree) line.
+        /// </summary>
+        /// <returns></returns>
+        public static bool EmptyLine(GameState state, Vector2Int source, Vector2Int target) {
+            var dx = Math.Sign(target.x - source.x);
+            var dy = Math.Sign(target.y - source.y);
+            var x = source.x + dx;
+            var y = source.y +dy;
+            while (x != target.x && y != target.y) {
+                if (state.Square(x, y) != PieceType.Empty)
+                    return false;
+                x += dx;
+                y += dy;
+            }
+
+            return true;
+        }
+        
         public static bool IsPiece(PieceType piece) => (int) piece > 1;
         
         /// <summary>

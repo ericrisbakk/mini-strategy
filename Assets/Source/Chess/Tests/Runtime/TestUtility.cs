@@ -11,21 +11,22 @@ using static Source.Chess.Runtime.Rules;
 
 namespace Source.Chess.Tests.Runtime {
     public static class TestUtility {
-        
-        public static Move Add(Player player, PieceType piece, string source, PieceType capture, string target)
-            => new Move(player, piece, ToVector2Int(source[1], source[0]), capture, ToVector2Int(target[1], target[0]));
-        
-        public static Promote Add(Player player, string target, PieceType promotion) 
-            => new Promote(player, ToVector2Int(target[1], target[0]), promotion);
-
-        public static EnPassant Add(Player player, string source, string target)
-            => new EnPassant(player, ToVector2Int(source[1], source[0]), ToVector2Int(target[1], target[0]));
-        
         public static Tuple<Vector2Int, PieceType> GetTuple(int x, int y, PieceType piece)
             => new Tuple<Vector2Int, PieceType>(new Vector2Int(x, y), piece);
         
         public static Tuple<Vector2Int, PieceType> GetTuple(char rank, char file, PieceType piece)
             => new Tuple<Vector2Int, PieceType>(Rules.ToVector2Int(rank, file), piece);
+        
+        public static List<IAction> GetMoves(Player player, PieceType piece, string source, PieceType capture,
+            string targets) {
+            var l = new List<IAction>();
+            var targetList = targets.Split(',');
+            foreach (var target in targetList) {
+                l.Add(new Move(player, piece, source, capture, target));
+            }
+
+            return l;
+        }
         
         public static void CompareActions(GameState state, LinearHistory history, List<Tuple<string, 
             List<IAction>>> tests) {

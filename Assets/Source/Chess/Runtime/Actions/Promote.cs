@@ -13,6 +13,15 @@ namespace Source.Chess.Runtime.Actions {
             Pawn = pawn;
             Promotion = promotion;
         }
+        
+        /// <summary>
+        /// `pawn` converted to `Vector2Int` using `Rules.ToVector2Int()`
+        /// </summary>
+        public Promote(Player player, string pawn, PieceType promotion) {
+            Player = player;
+            Pawn = Rules.ToVector2Int(pawn[1], pawn[0]);
+            Promotion = promotion;
+        }
 
         public bool Equals(Promote other) {
             return Equals(Player, other.Player)
