@@ -19,19 +19,11 @@ namespace Source.Chess.Tests.Runtime {
 
             state.CurrentPlayer = state.White;
             var whiteTests = new List<Tuple<string, List<IAction>>>() {
-                // TODO Wrong location for piece?
-                // TODO: I can make a single method in which I list all the targets in a single string instead.
-                new Tuple<string, List<IAction>>("c3", new List<IAction>() {
-                    Add(state.CurrentPlayer, PieceType.WKnight, "c3", PieceType.Empty, "b1"),
-                    Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"a2"),
-                    Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"a4"),
-                    Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"b5"),
-                    Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"d1"),
-                    Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"e2"),
-                    Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"e4"),
-                    Add(state.CurrentPlayer, PieceType.WKnight, "c3",PieceType.Empty,"d5"),
-                })
+                new Tuple<string, List<IAction>>("c3",
+                    GetMoves(state.CurrentPlayer, PieceType.WKnight, "c3", PieceType.Empty, 
+                        "b1,a2,a4,b5,d1,e2,e4,d5")),
             };
+            
             CompareActions(state, history, whiteTests);
             CompareAllActions(state, history, whiteTests);
         }

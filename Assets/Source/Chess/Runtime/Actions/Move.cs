@@ -21,6 +21,18 @@ namespace Source.Chess.Runtime.Actions {
             Capture = capture;
             Target = target;
         }
+        
+        /// <summary>
+        /// `source` and `target` converted to `Vector2Int` using `Rules.ToVector2Int()`
+        /// </summary>
+        public Move(Player player, PieceType piece, string source, PieceType capture, string target) {
+            Player = player;
+            Piece = piece;
+            Source = Rules.ToVector2Int(source[1], source[0]);
+            Capture = capture;
+            Target = Rules.ToVector2Int(target[1], target[0]);
+        }
+        
 
         public bool Equals(Move other) {
             return Equals(
