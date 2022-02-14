@@ -67,6 +67,8 @@ namespace Source.Chess.Runtime {
                 {PieceType.BKnight, GetKnightActions},
                 {PieceType.WRook, GetRookActions},
                 {PieceType.BRook, GetRookActions},
+                {PieceType.WBishop, GetBishopActions},
+                {PieceType.BBishop, GetBishopActions},
             };
 
         public static readonly Dictionary<PieceType, Func<Move, MoveStep>> PieceStepDict =
@@ -77,6 +79,8 @@ namespace Source.Chess.Runtime {
                 {PieceType.BKnight, move => new KnightMoveStep(move)},
                 {PieceType.WRook, move => new RookMoveStep(move)},
                 {PieceType.BRook, move => new RookMoveStep(move)},
+                {PieceType.WBishop, move => new BishopMoveStep(move)},
+                {PieceType.BBishop, move => new BishopMoveStep(move)},
             };
 
         #region Steps
@@ -291,6 +295,16 @@ namespace Source.Chess.Runtime {
             l.AddRange(GetMovementLine(state, target, 0, 1, 8));
             l.AddRange(GetMovementLine(state, target, 0, -1, 8));
             
+            return l;
+        }
+
+        public static List<IAction> GetBishopActions(GameState state, LinearHistory history, Vector2Int target) {
+            var l = new List<IAction>();
+            l.AddRange(GetMovementLine(state, target, 1, 1, 8));
+            l.AddRange(GetMovementLine(state, target, -1, 1, 8));
+            l.AddRange(GetMovementLine(state, target, 1, -1, 8));
+            l.AddRange(GetMovementLine(state, target, -1, -1, 8));
+
             return l;
         }
         
