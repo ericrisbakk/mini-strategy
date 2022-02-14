@@ -153,4 +153,15 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
     }
+    
+    public class QueenMoveStep : MoveStep {
+        public QueenMoveStep(Move move) : base(move) { }
+
+        public override GameState CommonValidation(GameState state, LinearHistory history) {
+            base.CommonValidation(state, history);
+            StepValidation.AssertQueenMovement(Move.Source, Move.Target);
+            StepValidation.AssertEmptyLine(state, Move.Source, Move.Target);
+            return state;
+        }
+    }
 }

@@ -107,17 +107,18 @@ namespace Source.Chess.Runtime.Steps {
         }
 
         public static void AssertStraightMovement(Vector2Int source, Vector2Int target) {
-            var dx = target.x - source.x;
-            var dy = target.y - source.y;
-            Assert.IsTrue((dx == 0 && dy != 0) || (dx != 0 && dy == 0),
-                $"Movement form {source} to {target} must be straight (horizontal or vertical).");
+            Assert.IsTrue(Rules.StraightMovement(source, target),
+                $"Movement from {source} to {target} must be straight (horizontal or vertical).");
         }
         
         public static void AssertDiagonalMovement(Vector2Int source, Vector2Int target) {
-            var dx = target.x - source.x;
-            var dy = target.y - source.y;
-            Assert.IsTrue(Math.Abs(dx) == Math.Abs(dy),
-                $"Movement form {source} to {target} must be straight diagonal (45 degrees).");
+            Assert.IsTrue(Rules.DiagonalMovement(source, target),
+                $"Movement from {source} to {target} must be straight diagonal (45 degrees).");
+        }
+
+        public static void AssertQueenMovement(Vector2Int source, Vector2Int target) {
+            Assert.IsTrue(Rules.StraightMovement(source, target) || Rules.DiagonalMovement(source, target),
+                $"Movement from {source} to {target} must be straight or diagonal.");
         }
     }
 }

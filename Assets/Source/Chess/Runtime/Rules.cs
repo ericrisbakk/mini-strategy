@@ -69,6 +69,8 @@ namespace Source.Chess.Runtime {
                 {PieceType.BRook, GetRookActions},
                 {PieceType.WBishop, GetBishopActions},
                 {PieceType.BBishop, GetBishopActions},
+                {PieceType.WQueen, GetQueenActions},
+                {PieceType.BQueen, GetQueenActions},
             };
 
         public static readonly Dictionary<PieceType, Func<Move, MoveStep>> PieceStepDict =
@@ -81,6 +83,8 @@ namespace Source.Chess.Runtime {
                 {PieceType.BRook, move => new RookMoveStep(move)},
                 {PieceType.WBishop, move => new BishopMoveStep(move)},
                 {PieceType.BBishop, move => new BishopMoveStep(move)},
+                {PieceType.WQueen, move => new QueenMoveStep(move)},
+                {PieceType.BQueen, move => new QueenMoveStep(move)},
             };
 
         #region Steps
@@ -307,6 +311,20 @@ namespace Source.Chess.Runtime {
 
             return l;
         }
+
+        public static List<IAction> GetQueenActions(GameState state, LinearHistory history, Vector2Int target) {
+            var l = new List<IAction>();
+            l.AddRange(GetMovementLine(state, target, 1, 0, 8));
+            l.AddRange(GetMovementLine(state, target, -1, 0, 8));
+            l.AddRange(GetMovementLine(state, target, 0, 1, 8));
+            l.AddRange(GetMovementLine(state, target, 0, -1, 8));
+            l.AddRange(GetMovementLine(state, target, 1, 1, 8));
+            l.AddRange(GetMovementLine(state, target, -1, 1, 8));
+            l.AddRange(GetMovementLine(state, target, 1, -1, 8));
+            l.AddRange(GetMovementLine(state, target, -1, -1, 8));
+
+            return l;
+        }
         
         public static Vector2Int ToVector2Int(char rank, char file) {
             int x = rank - '1' + 2;
@@ -474,6 +492,18 @@ namespace Source.Chess.Runtime {
 
             target = new Vector2Int(move.Target.x + direction, move.Target.y);
             return true;
+        }
+
+        public static bool StraightMovement(Vector2Int source, Vector2Int target) {
+            var dx = target.x - source.x;
+            var dy = target.y - source.y;
+            return (dx == 0 && dy != 0) || (dx != 0 && dy == 0);
+        }
+
+        public static bool DiagonalMovement(Vector2Int source, Vector2Int target) {
+            var dx = target.x - source.x;
+            var dy = target.y - source.y;
+            return Math.Abs(dx) == Math.Abs(dy);
         }
 
         #endregion
