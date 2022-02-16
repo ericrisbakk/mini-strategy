@@ -120,5 +120,12 @@ namespace Source.Chess.Runtime.Steps {
             Assert.IsTrue(Rules.StraightMovement(source, target) || Rules.DiagonalMovement(source, target),
                 $"Movement from {source} to {target} must be straight or diagonal.");
         }
+
+        public static void AssertSquareMovement(Vector2Int source, Vector2Int target, int length) {
+            var dx = target.x - source.x;
+            var dy = target.y - source.y;
+            Assert.IsTrue(Math.Abs(dx) <= length && Math.Abs(dy) <= length,
+                $"{source} and {target} difference of x and y components must be less than or equal to {length}.");
+        }
     }
 }
