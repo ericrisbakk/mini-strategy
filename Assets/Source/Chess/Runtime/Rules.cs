@@ -191,6 +191,19 @@ namespace Source.Chess.Runtime {
                 return true;
             }
         }
+
+        public static GameState Undo(GameState state, LinearHistory history, bool validate) {
+            var steps = history.LastAction;
+            foreach (var step1 in steps.Item2) {
+                var step = (IStep<GameState, LinearHistory>) step1;
+                if (validate)
+                    step.ValidateBackward(state, history);
+                step.Backward(state, history);
+            }
+
+            history.Backtrack();
+            return state;
+        }
         
         #endregion
 
@@ -558,17 +571,28 @@ namespace Source.Chess.Runtime {
         }
         
         /// <summary>
-        /// Checks all future actions to see whether there are any options left.
+        /// Checks whether the current player is in Checkmate.
         /// </summary>
-        public static bool CheckMate(GameState state) {
-            throw new NotImplementedException();
+        public static bool CheckMate(GameState state, LinearHistory history, bool validate) {
+            var color = state.CurrentPlayer.Color;
+            if (!Check(state, color))
+                return false;
+
+            var actions = GetAllActions(state, history);
+            foreach (var action in actions) {
+                Apply(state, history, action, validate);
+                if (!Check(state, color))
+                    return false;
+                Undo(state, history, validate);
+            }
+
+            return true;
         }
         
         /// <summary>
         /// Finds the king of the given color, then looks for possible threats to the king,
         /// based on movement of the other pieces.
         /// </summary>
-        /// <returns></returns>
         public static bool Check(GameState state, Color color) {
             var target = GetKingPosition(state, color);
             var straightThreats = StraightThreats(color);
@@ -600,9 +624,9 @@ namespace Source.Chess.Runtime {
         /// </summary>
         public static bool CheckThreatOnLine(GameState state, Vector2Int source, int dx, int dy, int length,
             PieceType[] threats) {
-            for (int i = 0; i < length; i++) {
-                var x = source.x + dx;
-                var y = source.y + dy;
+            for (int i = 1; i <= length; i++) {
+                var x = source.x + dx*i;
+                var y = source.y + dy*i;
                 var piece = state.Square(x, y);
                 if (piece != PieceType.Empty)
                     return threats.Contains(piece);
@@ -612,16 +636,16 @@ namespace Source.Chess.Runtime {
         
         public static PieceType[] StraightThreats(Color color) {
             var threats = new  PieceType[] {
-                color == Color.White ? PieceType.WQueen : PieceType.BQueen,
-                color == Color.White ? PieceType.WRook : PieceType.BRook,
+                color == Color.White ? PieceType.BQueen : PieceType.WQueen,
+                color == Color.White ? PieceType.BRook : PieceType.WRook,
             };
             return threats;
         }
 
         public static PieceType[] DiagonalThreats(Color color) {
             var threats = new PieceType[] {
-                color == Color.White ? PieceType.WQueen : PieceType.BQueen,
-                color == Color.White ? PieceType.WRook : PieceType.BRook,
+                color == Color.White ? PieceType.BQueen : PieceType.WQueen,
+                color == Color.White ? PieceType.BBishop : PieceType.WBishop,
             };
             return threats;
         }
