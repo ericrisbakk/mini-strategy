@@ -4,6 +4,8 @@ using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
 using static Source.Chess.Runtime.ChessConstants;
 using Color = Source.Chess.Runtime.ChessConstants.Color;
+using Checks = Source.Chess.Runtime.ChessChecks;
+
 
 namespace Source.Chess.Runtime.Steps {
     public class EnPassantStep : IStep<GameState, LinearHistory> {
@@ -81,12 +83,12 @@ namespace Source.Chess.Runtime.Steps {
             StepValidation.StepIsSubclassOf(step, typeof(MoveStep));
             var move = (MoveStep) step;
             var otherColor = move.Move.Player.Color;
-            var otherStart = Rules.GetPawnStartRow(otherColor);
+            var otherStart = Checks.GetPawnStartRow(otherColor);
             
-            StepValidation.PlayerIsColor(Rules.GetOtherPlayer(state, EnPassant.Player), otherColor);
+            StepValidation.PlayerIsColor(Checks.GetOtherPlayer(state, EnPassant.Player), otherColor);
             Assert.IsTrue(move.Move.Source.x == otherStart,
                 "Other pawn must have started from starting row.");
-            Assert.IsTrue(move.Move.Target.x == otherStart + 2*Rules.GetPawnDirection(otherColor),
+            Assert.IsTrue(move.Move.Target.x == otherStart + 2*Checks.GetPawnDirection(otherColor),
                 "Other pawn must have moved ahead two spaces.");
 
             return state;

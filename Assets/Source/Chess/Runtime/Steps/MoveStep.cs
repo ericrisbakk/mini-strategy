@@ -4,6 +4,7 @@ using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
 using static Source.Chess.Runtime.ChessConstants;
+using Checks = Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Runtime.Steps {
     public abstract class MoveStep : IStep<GameState, LinearHistory> {
@@ -41,7 +42,7 @@ namespace Source.Chess.Runtime.Steps {
             StepValidation.PlayerColorAssigned(Move.Player);
             StepValidation.OwnsPiece(Move.Player, Move.Piece);
             StepValidation.InBounds(Move.Capture, "Capture");
-            if (Rules.MoveCaptures(Move))
+            if (Checks.MoveCaptures(Move))
                 StepValidation.OpposingPieces(Move.Piece, Move.Capture);
             return state;
         }
@@ -90,7 +91,7 @@ namespace Source.Chess.Runtime.Steps {
 
         private bool UpForPromotion() {
             if ((Move.Piece == PieceType.WPawn || Move.Piece == PieceType.BPawn)
-                && Move.Target.x == Rules.GetBackRow(Rules.GetOtherColor(Move.Player.Color)))
+                && Move.Target.x == Checks.GetBackRow(Checks.GetOtherColor(Move.Player.Color)))
                 return true;
             return false;
         }
@@ -99,13 +100,13 @@ namespace Source.Chess.Runtime.Steps {
             base.CommonValidation(state, history);
             var s = Move.Source;
             var t = Move.Target;
-            var start = Rules.GetPawnStartRow(Move.Player.Color);
-            var direction = Rules.GetPawnDirection(Move.Player.Color);
+            var start = Checks.GetPawnStartRow(Move.Player.Color);
+            var direction = Checks.GetPawnDirection(Move.Player.Color);
 
             Assert.IsTrue(direction == Math.Sign(t.x - s.x),
                 "Pawn can only move towards opposite side.");
             
-            if (Rules.MoveCaptures(Move))
+            if (Checks.MoveCaptures(Move))
                 Assert.IsTrue(Math.Abs(t.y - s.y) == 1
                               && Math.Abs(t.x - s.x) == 1,
                     "pawn can only ever capture by moving diagonally.");

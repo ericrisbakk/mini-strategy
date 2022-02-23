@@ -8,6 +8,7 @@ using Source.StrategyFramework.Runtime.Representation;
 using static Source.Chess.Runtime.Rules;
 using static Source.Chess.Tests.Runtime.TestUtility;
 using static Source.Chess.Runtime.ChessConstants;
+using Checks = Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Tests.Runtime {
     public class PawnActionsTest {
@@ -166,11 +167,11 @@ namespace Source.Chess.Tests.Runtime {
             var history = new LinearHistory();
 
             var firstPlayer = whiteStarts ? state.White : state.Black;
-            var secondPlayer = GetOtherPlayer(state, firstPlayer);
+            var secondPlayer = Checks.GetOtherPlayer(state, firstPlayer);
             state.CurrentPlayer = firstPlayer;
             
             var firstPiece = whiteStarts ? PieceType.WPawn : PieceType.BPawn;
-            var secondPiece = GetOppositePiece(firstPiece);
+            var secondPiece = Checks.GetOppositePiece(firstPiece);
             var s1 = whiteStarts ? white : black;
             var s2 = whiteStarts ? black : white;
             

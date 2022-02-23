@@ -3,6 +3,7 @@ using Source.Chess.Runtime;
 using Source.StrategyFramework.Runtime.History;
 using Color = Source.Chess.Runtime.ChessConstants.Color;
 using Assert = UnityEngine.Assertions.Assert;
+using Checks = Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Tests.Runtime {
     public class CheckmateTests {
@@ -16,9 +17,9 @@ namespace Source.Chess.Tests.Runtime {
             var history = new LinearHistory();
 
             state.CurrentPlayer = state.White;
-            Assert.IsFalse(Rules.Check(state, Color.White),
+            Assert.IsFalse(Checks.Check(state, Color.White),
                 "The white king should not be in check.");
-            Assert.IsTrue(Rules.Check(state, Color.Black),
+            Assert.IsTrue(Checks.Check(state, Color.Black),
                 "The black king should be in check.");
         }
 
@@ -31,11 +32,11 @@ namespace Source.Chess.Tests.Runtime {
             var history = new LinearHistory();
 
             state.CurrentPlayer = state.White;
-            Assert.IsTrue(Rules.CheckMate(state, history, true),
+            Assert.IsTrue(Checks.CheckMate(state, history, true),
                 "The white king should be in checkmate.");
 
             state.CurrentPlayer = state.Black;
-            Assert.IsFalse(Rules.CheckMate(state, history, true),
+            Assert.IsFalse(Checks.CheckMate(state, history, true),
                 "The black king should not be in checkmate.");
         }
     }

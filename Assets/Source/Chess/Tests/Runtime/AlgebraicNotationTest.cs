@@ -8,13 +8,14 @@ using static Source.Chess.Runtime.ChessConstants;
 using Assert = UnityEngine.Assertions.Assert;
 using Color = Source.Chess.Runtime.ChessConstants.Color;
 using Constants = Source.Chess.Runtime.ChessConstants;
+using Checks = Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Tests.Runtime {
     public class AlgebraicNotationTest {
-        int whitePawnRow = Rules.GetPawnStartRow(Color.White);
-        int blackPawnRow = Rules.GetPawnStartRow(Color.Black);
-        int whiteBackRow = Rules.GetPawnStartRow(Color.White) - Rules.GetPawnDirection(Color.White);
-        int blackBackRow = Rules.GetPawnStartRow(Color.Black) - Rules.GetPawnDirection(Color.Black);
+        int whitePawnRow = Checks.GetPawnStartRow(Color.White);
+        int blackPawnRow = Checks.GetPawnStartRow(Color.Black);
+        int whiteBackRow = Checks.GetPawnStartRow(Color.White) - Checks.GetPawnDirection(Color.White);
+        int blackBackRow = Checks.GetPawnStartRow(Color.Black) - Checks.GetPawnDirection(Color.Black);
         
         [Test]
         public void TestPiecesOfStandardBoard() {

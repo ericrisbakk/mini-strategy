@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using static Source.Chess.Runtime.ChessConstants;
 using Color = Source.Chess.Runtime.ChessConstants.Color;
+using Checks = Source.Chess.Runtime.ChessChecks;
+
 
 namespace Source.Chess.Runtime.Steps {
     public static class StepValidation {
@@ -36,8 +38,8 @@ namespace Source.Chess.Runtime.Steps {
         /// Asserts that `piece` belongs to the `player`.
         /// </summary>
         public static void OwnsPiece(Player player, PieceType piece) {
-            Assert.IsTrue(Rules.OwnsPiece(player, piece),
-                $"Player {player.Color} and piece color {Rules.ColorOfPiece(piece)} do not match.");
+            Assert.IsTrue(Checks.OwnsPiece(player, piece),
+                $"Player {player.Color} and piece color {Checks.ColorOfPiece(piece)} do not match.");
         }
 
         /// <summary>
@@ -57,8 +59,8 @@ namespace Source.Chess.Runtime.Steps {
         /// Asserts that `p1` is `Color.White` and  `p2` is `Color.Black`, or the other way around.
         /// </summary>
         public static void OpposingPieces(PieceType p1, PieceType p2) {
-            var c1 = Rules.ColorOfPiece(p1);
-            var c2 = Rules.GetOtherColor(c1);
+            var c1 = Checks.ColorOfPiece(p1);
+            var c2 = Checks.GetOtherColor(c1);
             Assert.IsTrue(c1 == Color.White && c2 == Color.Black || c1 == Color.Black && c2 == Color.White,
                 $"Pieces {p1} and {p2} should be opposing pieces.");
         }
@@ -104,22 +106,22 @@ namespace Source.Chess.Runtime.Steps {
         }
 
         public static void AssertEmptyLine(GameState state, Vector2Int source, Vector2Int target) {
-            Assert.IsTrue(Rules.EmptyLine(state, source, target),
+            Assert.IsTrue(Checks.EmptyLine(state, source, target),
                 $"Squares between {source} and {target} must be empty.");
         }
 
         public static void AssertStraightMovement(Vector2Int source, Vector2Int target) {
-            Assert.IsTrue(Rules.StraightMovement(source, target),
+            Assert.IsTrue(Checks.StraightMovement(source, target),
                 $"Movement from {source} to {target} must be straight (horizontal or vertical).");
         }
         
         public static void AssertDiagonalMovement(Vector2Int source, Vector2Int target) {
-            Assert.IsTrue(Rules.DiagonalMovement(source, target),
+            Assert.IsTrue(Checks.DiagonalMovement(source, target),
                 $"Movement from {source} to {target} must be straight diagonal (45 degrees).");
         }
 
         public static void AssertQueenMovement(Vector2Int source, Vector2Int target) {
-            Assert.IsTrue(Rules.StraightMovement(source, target) || Rules.DiagonalMovement(source, target),
+            Assert.IsTrue(Checks.StraightMovement(source, target) || Checks.DiagonalMovement(source, target),
                 $"Movement from {source} to {target} must be straight or diagonal.");
         }
 

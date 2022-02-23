@@ -1,6 +1,7 @@
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
+using Checks = Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Runtime.Steps {
     public class ChangePlayerStep : IStep<GameState, LinearHistory> {
@@ -14,7 +15,7 @@ namespace Source.Chess.Runtime.Steps {
         }
 
         private static GameState FlipCurrentPlayer(GameState state) {
-            state.CurrentPlayer = Rules.GetOtherPlayer(state, state.CurrentPlayer);
+            state.CurrentPlayer = Checks.GetOtherPlayer(state, state.CurrentPlayer);
             return state;
         }
 
