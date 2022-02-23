@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Source.Chess.Runtime;
 using UnityEngine;
-using Assert = UnityEngine.Assertions.Assert;
-using Color = Source.Chess.Runtime.Color;
 using static Source.Chess.Tests.Runtime.TestUtility;
+using static Source.Chess.Runtime.ChessConstants;
+using Assert = UnityEngine.Assertions.Assert;
+using Color = Source.Chess.Runtime.ChessConstants.Color;
+using Constants = Source.Chess.Runtime.ChessConstants;
+using Checks = Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Tests.Runtime {
     public class AlgebraicNotationTest {
-        int whitePawnRow = Rules.GetPawnStartRow(Color.White);
-        int blackPawnRow = Rules.GetPawnStartRow(Color.Black);
-        int whiteBackRow = Rules.GetPawnStartRow(Color.White) - Rules.GetPawnDirection(Color.White);
-        int blackBackRow = Rules.GetPawnStartRow(Color.Black) - Rules.GetPawnDirection(Color.Black);
+        int whitePawnRow = Checks.GetPawnStartRow(Color.White);
+        int blackPawnRow = Checks.GetPawnStartRow(Color.Black);
+        int whiteBackRow = Checks.GetPawnStartRow(Color.White) - Checks.GetPawnDirection(Color.White);
+        int blackBackRow = Checks.GetPawnStartRow(Color.Black) - Checks.GetPawnDirection(Color.Black);
         
         [Test]
         public void TestPiecesOfStandardBoard() {
-            var state = new GameState(Rules.StandardWhite, Rules.StandardBlack);
+            var state = new GameState(Constants.StandardWhite, Constants.StandardBlack);
             var squares = state.Squares();
             var expected = GetStandardExpected();
 
@@ -31,7 +34,7 @@ namespace Source.Chess.Tests.Runtime {
         
         [Test]
         public void TestOutOfBounds() {
-            var state = new GameState(Rules.StandardWhite, Rules.StandardBlack);
+            var state = new GameState(Constants.StandardWhite, Constants.StandardBlack);
             var squares = state.Squares();
             Assert.IsTrue(squares.GetLength(0) == 12);
             Assert.IsTrue(squares.GetLength(1) == 12);
@@ -52,7 +55,7 @@ namespace Source.Chess.Tests.Runtime {
 
         [Test]
         public void TestStandardEmptySquares() {
-            var state = new GameState(Rules.StandardWhite, Rules.StandardBlack);
+            var state = new GameState(Constants.StandardWhite, Constants.StandardBlack);
             var squares = state.Squares();
             for (int i = 4; i < 8; i++) {
                 for (int j = 2; j < 9; j++) {
@@ -80,7 +83,7 @@ namespace Source.Chess.Tests.Runtime {
             foreach (var comp in comparisons) {
                 var rank = comp.Item1[1];
                 var file = comp.Item1[0];
-                var t = Rules.ToVector2Int(rank, file);
+                var t = ChessRules.ToVector2Int(rank, file);
                 Assert.IsTrue(t == comp.Item2,
                     $"Algebraic notation \"{comp.Item1}\" returned {t}, but should have been {comp.Item2}.");
             }

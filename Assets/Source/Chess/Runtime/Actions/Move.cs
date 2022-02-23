@@ -1,6 +1,7 @@
 using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
+using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Runtime.Actions {
     /// <summary>
@@ -28,9 +29,9 @@ namespace Source.Chess.Runtime.Actions {
         public Move(Player player, PieceType piece, string source, PieceType capture, string target) {
             Player = player;
             Piece = piece;
-            Source = Rules.ToVector2Int(source[1], source[0]);
+            Source = ChessRules.ToVector2Int(source[1], source[0]);
             Capture = capture;
-            Target = Rules.ToVector2Int(target[1], target[0]);
+            Target = ChessRules.ToVector2Int(target[1], target[0]);
         }
         
 

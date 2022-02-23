@@ -1,6 +1,7 @@
 using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
+using Checks = Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Runtime.Actions {
     public class EnPassant : IAction {
@@ -8,7 +9,7 @@ namespace Source.Chess.Runtime.Actions {
         public Vector2Int Source { get; }
         public Vector2Int Target { get; }
 
-        public Vector2Int Capture => new Vector2Int(Target.x - Rules.GetPawnDirection(Player.Color), Target.y);
+        public Vector2Int Capture => new Vector2Int(Target.x - Checks.GetPawnDirection(Player.Color), Target.y);
         
         public EnPassant(Player player, Vector2Int source, Vector2Int target) {
             Player = player;
@@ -21,8 +22,8 @@ namespace Source.Chess.Runtime.Actions {
         /// </summary>
         public EnPassant(Player player, string source, string target) {
             Player = player;
-            Source = Rules.ToVector2Int(source[1], source[0]);
-            Target = Rules.ToVector2Int(target[1], target[0]);
+            Source = ChessRules.ToVector2Int(source[1], source[0]);
+            Target = ChessRules.ToVector2Int(target[1], target[0]);
         }
 
         public bool Equals(EnPassant other) {

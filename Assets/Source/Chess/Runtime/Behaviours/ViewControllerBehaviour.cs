@@ -7,6 +7,9 @@ using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 using UnityEngine.Assertions;
+using static Source.Chess.Runtime.ChessConstants;
+using Checks = Source.Chess.Runtime.ChessChecks;
+using Rules =  Source.Chess.Runtime.ChessRules;
 
 namespace Source.Chess.Runtime.Behaviours {
     public class ViewControllerBehaviour : SerializedMonoBehaviour {
@@ -218,7 +221,7 @@ namespace Source.Chess.Runtime.Behaviours {
             var source = ToInternalIndex(step.Move.Source);
             var target = ToInternalIndex(step.Move.Target);
             
-            if (Rules.MoveCaptures(step.Move))
+            if (Checks.MoveCaptures(step.Move))
                 DestroyPiece(target);
 
             MovePiece(source, target);
@@ -268,7 +271,7 @@ namespace Source.Chess.Runtime.Behaviours {
             foreach (var action in actions) {
                 switch (action) {
                     case Move move:
-                        if (Rules.MoveCaptures(move))
+                        if (Checks.MoveCaptures(move))
                             AddHighlight(highlights, HighlightType.Capture, action, move.Target);
                         else
                             AddHighlight(highlights, HighlightType.Move, action, move.Target);

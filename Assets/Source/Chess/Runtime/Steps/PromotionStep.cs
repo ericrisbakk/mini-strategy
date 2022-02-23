@@ -2,6 +2,9 @@ using Source.Chess.Runtime.Actions;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
+using static Source.Chess.Runtime.ChessConstants;
+using Color = Source.Chess.Runtime.ChessConstants.Color;
+using Checks = Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Runtime.Steps {
     public class PromotionStep : IStep<GameState, LinearHistory> {
@@ -55,8 +58,8 @@ namespace Source.Chess.Runtime.Steps {
         private GameState CommonValidation(GameState state, LinearHistory history) {
             var t = Promote.Pawn;
             var color = Promote.Player.Color;
-            var otherColor = Rules.GetOtherColor(color);
-            Assert.IsTrue(t.x == Rules.GetBackRow(otherColor),
+            var otherColor = Checks.GetOtherColor(color);
+            Assert.IsTrue(t.x == Checks.GetBackRow(otherColor),
                 "A pawn can only be promoted when it has reached the furthest opposite row.");
             StepValidation.OwnsPiece(Promote. Player, state.Squares()[t.x, t.y]);
             StepValidation.PieceIsNot(Promote.Promotion, StepValidation.Pawns);
