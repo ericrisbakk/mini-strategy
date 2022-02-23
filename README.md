@@ -1,8 +1,8 @@
-The outline of a little boardgame framework for Unity3D. Began as a mini-project to challenge myself. It might become a package in the distant future.
+The outline of a little board-game framework for Unity3D. Began as a personal challenge and a way to practice writing tests. It might become a package in the distant future.
 
 Rather than an object-oriented approach, it tries to treat state and actions as only data, while behaviour is handled through static functions, in an attempt to emulate functional programming. However, for the sake of practicality, the state and history objects of a game are always assumed to be mutable. 
 
-The project currently contains two simple games - tic-tac-toe, and chess (unfinished), serving as examples, and allowing for comparison in order to find common patterns.
+The project currently contains two simple games - tic-tac-toe, and chess (work in progress), serving as examples and an opportunity to find re-usable patterns between games.
 
 # Setup
 
