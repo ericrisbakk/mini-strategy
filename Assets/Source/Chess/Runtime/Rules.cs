@@ -56,7 +56,32 @@ namespace Source.Chess.Runtime {
         public const int blackBackRow = 9;
         public const int blackPawnRow = 8;
         public const int blackPawnDirection = -1;
-        
+
+        public static readonly int[][] StraightDeltas = new int[][] {
+            new int[] {1, 0},
+            new int[] {-1, 0},
+            new int[] {0, 1},
+            new int[] {0, -1},
+        };
+
+        public static readonly int[][] DiagonalDeltas = new int[][] {
+            new int[] {1, 1},
+            new int[] {-1, 1},
+            new int[] {1, -1},
+            new int[] {-1, -1},
+        };
+
+        public static readonly int[][] KnightDeltas = new int[][] {
+            new int[] {1, 2},
+            new int[] {-1, 2},
+            new int[] {1, -2},
+            new int[] {-1, -2},
+            new int[] {2, 1},
+            new int[] {-2, 1},
+            new int[] {2, -1},
+            new int[] {-2, -1},
+        };
+
         #endregion
 
         public static readonly Dictionary<PieceType, Func<GameState, LinearHistory, Vector2Int, List<IAction>>> 
@@ -71,6 +96,8 @@ namespace Source.Chess.Runtime {
                 {PieceType.BBishop, GetBishopActions},
                 {PieceType.WQueen, GetQueenActions},
                 {PieceType.BQueen, GetQueenActions},
+                {PieceType.WKing, GetKingActions},
+                {PieceType.BKing, GetKingActions},
             };
 
         public static readonly Dictionary<PieceType, Func<Move, MoveStep>> PieceStepDict =
@@ -85,6 +112,8 @@ namespace Source.Chess.Runtime {
                 {PieceType.BBishop, move => new BishopMoveStep(move)},
                 {PieceType.WQueen, move => new QueenMoveStep(move)},
                 {PieceType.BQueen, move => new QueenMoveStep(move)},
+                {PieceType.WKing, move => new KingMoveStep(move)},
+                {PieceType.BKing, move => new KingMoveStep(move)},
             };
 
         #region Steps
@@ -161,6 +190,19 @@ namespace Source.Chess.Runtime {
                 step = new ChangePlayerStep();
                 return true;
             }
+        }
+
+        public static GameState Undo(GameState state, LinearHistory history, bool validate) {
+            var steps = history.LastAction;
+            foreach (var step1 in steps.Item2) {
+                var step = (IStep<GameState, LinearHistory>) step1;
+                if (validate)
+                    step.ValidateBackward(state, history);
+                step.Backward(state, history);
+            }
+
+            history.Backtrack();
+            return state;
         }
         
         #endregion
@@ -280,49 +322,51 @@ namespace Source.Chess.Runtime {
 
         public static List<IAction> GetKnightActions(GameState state, LinearHistory history, Vector2Int target) {
             var l = new List<IAction>();
-            l.AddRange(GetMovementLine(state, target, 1, 2, 1));
-            l.AddRange(GetMovementLine(state, target, 2, 1, 1));
-            l.AddRange(GetMovementLine(state, target, -1, 2, 1));
-            l.AddRange(GetMovementLine(state, target, -2, 1, 1));
-            l.AddRange(GetMovementLine(state, target, 1, -2, 1));
-            l.AddRange(GetMovementLine(state, target, 2, -1, 1));
-            l.AddRange(GetMovementLine(state, target, -1, -2, 1));
-            l.AddRange(GetMovementLine(state, target, -2, -1, 1));
+            foreach (var delta in KnightDeltas) {
+                l.AddRange(GetMovementLine(state, target, delta[0], delta[1], 1));
+            }
 
             return l;
         }
 
         public static List<IAction> GetRookActions(GameState state, LinearHistory history, Vector2Int target) {
             var l = new List<IAction>();
-            l.AddRange(GetMovementLine(state, target, 1, 0, 8));
-            l.AddRange(GetMovementLine(state, target, -1, 0, 8));
-            l.AddRange(GetMovementLine(state, target, 0, 1, 8));
-            l.AddRange(GetMovementLine(state, target, 0, -1, 8));
-            
+            foreach (var delta in StraightDeltas) {
+                l.AddRange(GetMovementLine(state, target, delta[0], delta[1], 8));
+            }
             return l;
         }
 
         public static List<IAction> GetBishopActions(GameState state, LinearHistory history, Vector2Int target) {
             var l = new List<IAction>();
-            l.AddRange(GetMovementLine(state, target, 1, 1, 8));
-            l.AddRange(GetMovementLine(state, target, -1, 1, 8));
-            l.AddRange(GetMovementLine(state, target, 1, -1, 8));
-            l.AddRange(GetMovementLine(state, target, -1, -1, 8));
+            foreach (var delta in DiagonalDeltas) {
+                l.AddRange(GetMovementLine(state, target, delta[0], delta[1], 8));
+            }
 
             return l;
         }
 
         public static List<IAction> GetQueenActions(GameState state, LinearHistory history, Vector2Int target) {
             var l = new List<IAction>();
-            l.AddRange(GetMovementLine(state, target, 1, 0, 8));
-            l.AddRange(GetMovementLine(state, target, -1, 0, 8));
-            l.AddRange(GetMovementLine(state, target, 0, 1, 8));
-            l.AddRange(GetMovementLine(state, target, 0, -1, 8));
-            l.AddRange(GetMovementLine(state, target, 1, 1, 8));
-            l.AddRange(GetMovementLine(state, target, -1, 1, 8));
-            l.AddRange(GetMovementLine(state, target, 1, -1, 8));
-            l.AddRange(GetMovementLine(state, target, -1, -1, 8));
+            for (int i = 0; i < StraightDeltas.Length; i++) {
+                var straightDelta = StraightDeltas[i];
+                var diagonalDelta = DiagonalDeltas[i];
+                l.AddRange(GetMovementLine(state, target, straightDelta[0], straightDelta[1], 8));
+                l.AddRange(GetMovementLine(state, target, diagonalDelta[0], diagonalDelta[1], 8));
+            }
 
+            return l;
+        }
+
+        public static List<IAction> GetKingActions(GameState state, LinearHistory history, Vector2Int target) {
+            var l = new List<IAction>();
+            for (int i = 0; i < StraightDeltas.Length; i++) {
+                var straightDelta = StraightDeltas[i];
+                var diagonalDelta = DiagonalDeltas[i];
+                l.AddRange(GetMovementLine(state, target, straightDelta[0], straightDelta[1], 1));
+                l.AddRange(GetMovementLine(state, target, diagonalDelta[0], diagonalDelta[1], 1));
+            }
+            
             return l;
         }
         
@@ -494,18 +538,125 @@ namespace Source.Chess.Runtime {
             return true;
         }
 
+        /// <summary>
+        /// Check whether movement from `source` to `target` uses cardinal directions.
+        /// </summary>
         public static bool StraightMovement(Vector2Int source, Vector2Int target) {
             var dx = target.x - source.x;
             var dy = target.y - source.y;
             return (dx == 0 && dy != 0) || (dx != 0 && dy == 0);
         }
 
+        /// <summary>
+        /// Check whether movement from `source` to `target` is strictly diagonal (45 degrees).
+        /// </summary>
         public static bool DiagonalMovement(Vector2Int source, Vector2Int target) {
             var dx = target.x - source.x;
             var dy = target.y - source.y;
             return Math.Abs(dx) == Math.Abs(dy);
         }
 
+        // TODO: I *could* just keep track of this in a field.
+        public static Vector2Int GetKingPosition(GameState state, Color color) {
+            var king = color == Color.White ? PieceType.WKing : PieceType.BKing;
+            for (var rank = '1'; rank < '9'; rank++) {
+                for (var file = 'a'; file < 'i'; file++) {
+                    var pos = ToVector2Int(rank, file);
+                    if (state.Square(pos) == king)
+                        return pos;
+                }
+            }
+
+            throw new Exception($"Error. Could not find king for {color}");
+        }
+        
+        /// <summary>
+        /// Checks whether the current player is in Checkmate.
+        /// </summary>
+        public static bool CheckMate(GameState state, LinearHistory history, bool validate) {
+            var color = state.CurrentPlayer.Color;
+            if (!Check(state, color))
+                return false;
+
+            var actions = GetAllActions(state, history);
+            foreach (var action in actions) {
+                Apply(state, history, action, validate);
+                if (!Check(state, color))
+                    return false;
+                Undo(state, history, validate);
+            }
+
+            return true;
+        }
+        
+        /// <summary>
+        /// Finds the king of the given color, then looks for possible threats to the king,
+        /// based on movement of the other pieces.
+        /// </summary>
+        public static bool Check(GameState state, Color color) {
+            var target = GetKingPosition(state, color);
+            var straightThreats = StraightThreats(color);
+            var diagonalThreats = Rules.DiagonalThreats(color);
+            var knightThreat = color == Color.White 
+                    ? new PieceType[] { PieceType.BKnight } 
+                    : new PieceType[] { PieceType.WKnight }
+            ;
+            var kingThreat = color == Color.White 
+                    ? new PieceType[] { PieceType.BKing } 
+                    : new PieceType[] { PieceType.WKing }
+                ;
+
+            for (int i = 0; i < StraightDeltas.Length; i++) {
+                var straightDelta = StraightDeltas[i];
+                var diagonalDelta = DiagonalDeltas[i];
+                if (CheckThreatOnLine(state, target, straightDelta[0], straightDelta[1], 8, straightThreats)
+                || CheckThreatOnLine(state, target, diagonalDelta[0], diagonalDelta[1], 8, diagonalThreats)
+                || CheckThreatOnLine(state, target, straightDelta[0], straightDelta[1], 1, kingThreat)
+                || CheckThreatOnLine(state, target, diagonalDelta[0], diagonalDelta[1], 1, kingThreat)
+                )
+                    return true;
+            }
+
+            foreach (var delta in KnightDeltas) {
+                if (CheckThreatOnLine(state, target, delta[0], delta[1], 1, knightThreat))
+                    return true;
+            }
+
+            return false;
+        }
+        
+        /// <summary>
+        /// Checks in a line from the given `source`, `dx`, and `dy` until it meets a non-empty `PieceType´.
+        /// Returns true if the piece is found in `threats`, false otherwise..
+        /// </summary>
+        public static bool CheckThreatOnLine(GameState state, Vector2Int source, int dx, int dy, int length,
+            PieceType[] threats) {
+            for (int i = 1; i <= length; i++) {
+                var x = source.x + dx*i;
+                var y = source.y + dy*i;
+                var piece = state.Square(x, y);
+                if (piece != PieceType.Empty)
+                    return threats.Contains(piece);
+            }
+            return false;
+        }
+        
+        public static PieceType[] StraightThreats(Color color) {
+            var threats = new  PieceType[] {
+                color == Color.White ? PieceType.BQueen : PieceType.WQueen,
+                color == Color.White ? PieceType.BRook : PieceType.WRook,
+            };
+            return threats;
+        }
+
+        public static PieceType[] DiagonalThreats(Color color) {
+            var threats = new PieceType[] {
+                color == Color.White ? PieceType.BQueen : PieceType.WQueen,
+                color == Color.White ? PieceType.BBishop : PieceType.WBishop,
+            };
+            return threats;
+        }
+        
         #endregion
     }
 }

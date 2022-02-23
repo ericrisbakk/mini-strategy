@@ -164,4 +164,15 @@ namespace Source.Chess.Runtime.Steps {
             return state;
         }
     }
+    
+    public class KingMoveStep : MoveStep {
+        public KingMoveStep(Move move) : base(move) { }
+
+        // TODO: Check that target position is not threatened.
+        public override GameState CommonValidation(GameState state, LinearHistory history) {
+            base.CommonValidation(state, history);
+            StepValidation.AssertSquareMovement(Move.Source, Move.Target, 1);
+            return state;
+        }
+    }
 }
