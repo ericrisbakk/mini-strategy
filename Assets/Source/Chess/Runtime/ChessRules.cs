@@ -12,13 +12,10 @@ using static Source.Chess.Runtime.ChessConstants;
 using static Source.Chess.Runtime.ChessChecks;
 
 namespace Source.Chess.Runtime {
-
-    // TODO: Rules should probably inherit from something defining base classes, especially a "GetAllAvailableActions" method.
-    public static class Rules {
+    
+    public static class ChessRules {
 
         #region Steps
-        
-        
         
         /// <summary>
         /// Updates the state and history with the results of applying the given action.

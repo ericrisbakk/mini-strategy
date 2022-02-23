@@ -5,7 +5,7 @@ using Source.StrategyFramework.Runtime.History;
 using UnityEngine;
 using System.Linq;
 using static Source.Chess.Runtime.ChessConstants;
-using static Source.Chess.Runtime.Rules;
+using static Source.Chess.Runtime.ChessRules;
 using Color = Source.Chess.Runtime.ChessConstants.Color;
 
 namespace Source.Chess.Runtime {

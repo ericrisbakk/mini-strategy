@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using static Source.Chess.Runtime.ChessConstants;
 using Checks = Source.Chess.Runtime.ChessChecks;
+using Rules =  Source.Chess.Runtime.ChessRules;
 
 namespace Source.Chess.Runtime.Behaviours {
     public class ViewControllerBehaviour : SerializedMonoBehaviour {

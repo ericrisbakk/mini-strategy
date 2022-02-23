@@ -5,7 +5,7 @@ using Source.Chess.Runtime.Steps;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
-using static Source.Chess.Runtime.Rules;
+using static Source.Chess.Runtime.ChessRules;
 
 namespace Source.Chess.Runtime {
     public static class ChessConstants {

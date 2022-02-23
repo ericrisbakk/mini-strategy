@@ -7,7 +7,7 @@ using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static Source.Chess.Runtime.Rules;
+using static Source.Chess.Runtime.ChessRules;
 using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Tests.Runtime {
@@ -16,7 +16,7 @@ namespace Source.Chess.Tests.Runtime {
             => new Tuple<Vector2Int, PieceType>(new Vector2Int(x, y), piece);
         
         public static Tuple<Vector2Int, PieceType> GetTuple(char rank, char file, PieceType piece)
-            => new Tuple<Vector2Int, PieceType>(Rules.ToVector2Int(rank, file), piece);
+            => new Tuple<Vector2Int, PieceType>(ChessRules.ToVector2Int(rank, file), piece);
         
         public static List<IAction> GetMoves(Player player, PieceType piece, string source, PieceType capture,
             string targets) {

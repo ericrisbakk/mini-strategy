@@ -21,7 +21,7 @@ namespace Source.Chess.Runtime.Actions {
         /// </summary>
         public Promote(Player player, string pawn, PieceType promotion) {
             Player = player;
-            Pawn = Rules.ToVector2Int(pawn[1], pawn[0]);
+            Pawn = ChessRules.ToVector2Int(pawn[1], pawn[0]);
             Promotion = promotion;
         }
 

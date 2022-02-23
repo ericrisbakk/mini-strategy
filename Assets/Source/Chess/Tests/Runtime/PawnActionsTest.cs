@@ -5,7 +5,7 @@ using Source.Chess.Runtime;
 using Source.Chess.Runtime.Actions;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
-using static Source.Chess.Runtime.Rules;
+using static Source.Chess.Runtime.ChessRules;
 using static Source.Chess.Tests.Runtime.TestUtility;
 using static Source.Chess.Runtime.ChessConstants;
 using Checks = Source.Chess.Runtime.ChessChecks;

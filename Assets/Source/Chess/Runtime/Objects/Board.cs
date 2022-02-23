@@ -25,7 +25,7 @@ namespace Source.Chess.Runtime.Objects {
 
                 bool notPawn = placement.Length == 3;
                 int pad = notPawn ? 1 : 0;
-                var t = Rules.ToVector2Int(placement[1 + pad], placement[pad]);
+                var t = ChessRules.ToVector2Int(placement[1 + pad], placement[pad]);
                 var pieceType = notPawn ? ToPieceType(placement[0], isWhite) : (isWhite ? PieceType.WPawn : PieceType.BPawn);
                 Squares[t.x, t.y] = pieceType;
             }

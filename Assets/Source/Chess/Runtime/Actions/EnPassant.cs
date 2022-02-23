@@ -22,8 +22,8 @@ namespace Source.Chess.Runtime.Actions {
         /// </summary>
         public EnPassant(Player player, string source, string target) {
             Player = player;
-            Source = Rules.ToVector2Int(source[1], source[0]);
-            Target = Rules.ToVector2Int(target[1], target[0]);
+            Source = ChessRules.ToVector2Int(source[1], source[0]);
+            Target = ChessRules.ToVector2Int(target[1], target[0]);
         }
 
         public bool Equals(EnPassant other) {

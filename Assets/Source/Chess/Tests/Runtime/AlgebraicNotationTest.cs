@@ -83,7 +83,7 @@ namespace Source.Chess.Tests.Runtime {
             foreach (var comp in comparisons) {
                 var rank = comp.Item1[1];
                 var file = comp.Item1[0];
-                var t = Rules.ToVector2Int(rank, file);
+                var t = ChessRules.ToVector2Int(rank, file);
                 Assert.IsTrue(t == comp.Item2,
                     $"Algebraic notation \"{comp.Item1}\" returned {t}, but should have been {comp.Item2}.");
             }
