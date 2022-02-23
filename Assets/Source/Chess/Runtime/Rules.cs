@@ -598,15 +598,22 @@ namespace Source.Chess.Runtime {
             var straightThreats = StraightThreats(color);
             var diagonalThreats = Rules.DiagonalThreats(color);
             var knightThreat = color == Color.White 
-                    ? new PieceType[] { PieceType.WKnight } 
-                    : new PieceType[] { PieceType.BKnight }
+                    ? new PieceType[] { PieceType.BKnight } 
+                    : new PieceType[] { PieceType.WKnight }
             ;
+            var kingThreat = color == Color.White 
+                    ? new PieceType[] { PieceType.BKing } 
+                    : new PieceType[] { PieceType.WKing }
+                ;
 
             for (int i = 0; i < StraightDeltas.Length; i++) {
                 var straightDelta = StraightDeltas[i];
                 var diagonalDelta = DiagonalDeltas[i];
                 if (CheckThreatOnLine(state, target, straightDelta[0], straightDelta[1], 8, straightThreats)
-                || CheckThreatOnLine(state, target, diagonalDelta[0], diagonalDelta[1], 8, diagonalThreats)) 
+                || CheckThreatOnLine(state, target, diagonalDelta[0], diagonalDelta[1], 8, diagonalThreats)
+                || CheckThreatOnLine(state, target, straightDelta[0], straightDelta[1], 1, kingThreat)
+                || CheckThreatOnLine(state, target, diagonalDelta[0], diagonalDelta[1], 1, kingThreat)
+                )
                     return true;
             }
 
