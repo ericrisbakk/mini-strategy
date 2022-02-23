@@ -2,6 +2,8 @@ using Source.Chess.Runtime.Actions;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
+using static Source.Chess.Runtime.ChessConstants;
+using Color = Source.Chess.Runtime.ChessConstants.Color;
 
 namespace Source.Chess.Runtime.Steps {
     public class EnPassantStep : IStep<GameState, LinearHistory> {

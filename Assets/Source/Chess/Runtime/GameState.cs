@@ -1,6 +1,8 @@
 using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
+using static Source.Chess.Runtime.ChessConstants;
+using Color = Source.Chess.Runtime.ChessConstants.Color;
 
 namespace Source.Chess.Runtime {
     public class GameState : IState {

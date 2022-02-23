@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Runtime.Behaviours {
     public class PromotionButtonBehaviour : MonoBehaviour {

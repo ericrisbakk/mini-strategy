@@ -7,6 +7,7 @@ using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 using UnityEngine.Assertions;
+using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Runtime.Behaviours {
     public class ViewControllerBehaviour : SerializedMonoBehaviour {

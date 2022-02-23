@@ -1,6 +1,7 @@
 using Source.Chess.Runtime.Objects;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
+using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Runtime.Actions {
     /// <summary>

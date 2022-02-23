@@ -8,6 +8,7 @@ using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine;
 using UnityEngine.Assertions;
 using static Source.Chess.Runtime.Rules;
+using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Tests.Runtime {
     public static class TestUtility {

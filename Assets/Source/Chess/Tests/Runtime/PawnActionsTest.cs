@@ -7,6 +7,7 @@ using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using static Source.Chess.Runtime.Rules;
 using static Source.Chess.Tests.Runtime.TestUtility;
+using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Tests.Runtime {
     public class PawnActionsTest {

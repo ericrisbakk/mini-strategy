@@ -1,7 +1,9 @@
 using Sirenix.OdinInspector;
-using Source.Chess.Runtime.Actions;
 using UnityEngine;
 using UnityEngine.Assertions;
+using static Source.Chess.Runtime.ChessConstants;
+using Color = Source.Chess.Runtime.ChessConstants.Color;
+
 
 namespace Source.Chess.Runtime.Behaviours {
     public class PromotionSelectBehaviour : MonoBehaviour {

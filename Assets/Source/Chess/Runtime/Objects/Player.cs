@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine.Assertions;
+using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Runtime.Objects {
     public class Player {

@@ -3,6 +3,7 @@ using Source.Chess.Runtime.Actions;
 using Source.StrategyFramework.Runtime.History;
 using Source.StrategyFramework.Runtime.Representation;
 using UnityEngine.Assertions;
+using static Source.Chess.Runtime.ChessConstants;
 
 namespace Source.Chess.Runtime.Steps {
     public abstract class MoveStep : IStep<GameState, LinearHistory> {

@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using Source.Chess.Runtime;
 using Source.StrategyFramework.Runtime.History;
-using Source.StrategyFramework.Runtime.Representation;
-using static Source.Chess.Tests.Runtime.TestUtility;
+using Color = Source.Chess.Runtime.ChessConstants.Color;
 using Assert = UnityEngine.Assertions.Assert;
 
 namespace Source.Chess.Tests.Runtime {
