@@ -1,7 +1,8 @@
 using System;
 
 namespace Source.StrategyFramework.Runtime.Representation {
-
+    // TODO: Will be combined with IStep.
+    // TODO: The current plan is to make this a data object, and handle forwards/backwards/validation behaviour through static methods.
     public interface IStep {}
 
     /// <summary>
